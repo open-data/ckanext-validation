@@ -40,7 +40,7 @@ def get_validation_badge(resource, in_listing=False):
     timestamp = render_datetime(validation.get('finished'), with_hours=True) \
         if validation.get('finished') else ''
 
-    return unicode('<a href="{validation_url}" class="validation-badge"><img '
+    return str('<a href="{validation_url}" class="validation-badge"><img '
                    'src="{badge_url}" alt="{alt}" title="{'
                    'title}"/></a>').format(
         validation_url=validation_url,
@@ -105,3 +105,7 @@ def validation_status(resource_id):
         return validation.get('status')
     except toolkit.ObjectNotFound:
         return 'unknown'
+
+
+def use_webassets():
+    return int(h.ckan_version().split('.')[1]) >= 9

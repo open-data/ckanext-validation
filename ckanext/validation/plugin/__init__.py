@@ -26,6 +26,7 @@ from ckanext.validation.helpers import (
     dump_json_value,
     bootstrap_version,
     validation_status,
+    use_webassets,
 )
 from ckanext.validation.validators import (
     resource_schema_validator,
@@ -81,7 +82,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
         toolkit.add_template_directory(config_, u'../templates')
         toolkit.add_public_directory(config_, u'../public')
-        toolkit.add_resource(u'../fanstatic', 'ckanext-validation')
+        toolkit.add_resource(u'../webassets', 'ckanext-validation')
 
     # IActions
 
@@ -119,6 +120,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             u'dump_json_value': dump_json_value,
             u'bootstrap_version': bootstrap_version,
             u'validation_status': validation_status,
+            u'use_webassets': use_webassets,
         }
 
     # IResourceController
