@@ -54,27 +54,16 @@ def run_validation_job(resource):
         {'ignore_auth': True}, {'id': resource['package_id']})
 
     source = None
-    if resource.get(u'url_type') == u'upload':
-        upload = uploader.get_resource_uploader(resource)
-        if isinstance(upload, uploader.ResourceUpload):
-            source = upload.get_path(resource[u'id'])
-        else:
-            # Upload is not the default implementation (ie it's a cloud storage
-            # implementation)
-            pass_auth_header = t.asbool(
-                t.config.get(u'ckanext.validation.pass_auth_header', True))
-            if dataset[u'private'] and pass_auth_header:
-                s = requests.Session()
-                s.headers.update({
-                    u'Authorization': t.config.get(
-                        u'ckanext.validation.pass_auth_header_value',
-                        _get_site_user_api_key())
-                })
+    if resource.get('url_type') != 'upload':
+        return  # only uploaded files may be validated for now
 
-                options[u'http_session'] = s
-
-    if not source:
-        source = resource[u'url']
+    url = resource.get('url')
+    import urlparse
+    url_parse = urlparse.urlsplit(url)
+    filename = url_parse.path.split('/')[-1]
+    from ckanext.cloudstorage.storage import ResourceCloudStorage
+    storage = ResourceCloudStorage(resource)
+    source = storage.get_url_from_filename(resource['id'], filename)
 
     schema = resource.get(u'schema')
     if schema and isinstance(schema, basestring):
