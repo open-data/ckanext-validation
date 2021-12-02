@@ -7,7 +7,7 @@ import re
 
 import requests
 from sqlalchemy.orm.exc import NoResultFound
-from goodtables import validate
+from frictionless import validate
 
 from ckan.model import Session
 import ckan.lib.uploader as uploader

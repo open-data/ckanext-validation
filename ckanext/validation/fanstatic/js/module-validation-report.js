@@ -4,9 +4,9 @@ this.ckan.module('validation-report', function (jQuery) {
       report: null
     },
     initialize: function() {
-      goodtablesUI.render(
-        goodtablesUI.Report,
-        {report: this.options.report},
+      frictionlessComponents.render(
+        frictionlessComponents.Report,
+        {this.options.report},
         this.el[0]
       )
     }
