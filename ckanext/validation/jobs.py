@@ -89,13 +89,6 @@ def run_validation_job(resource):
         validation.status = u'success' if report[u'valid'] else u'failure'
         validation.report = report
 
-        # load successfully validated resources to datastore using xloader
-        if validation.status == u'success':
-            if 'xloader' in config.get('ckan.plugins'):
-                t.get_action('xloader_submit')(
-                    {'ignore_auth': True,
-                     'user': t.get_action('get_site_user')({'ignore_auth': True})['name']},
-                    {'resource_id': resource['id']})
     else:
         validation.status = u'error'
         validation.error = {
@@ -113,6 +106,15 @@ def run_validation_job(resource):
         {'id': resource['id'],
          'validation_status': validation.status,
          'validation_timestamp': validation.finished.isoformat()})
+
+    # load successfully validated resources to datastore using xloader
+    if validation.status == u'success':
+        if 'xloader' in config.get('ckan.plugins'):
+            t.get_action('xloader_submit')(
+                {'ignore_auth': True,
+                 'user': t.get_action('get_site_user')({'ignore_auth': True})[
+                     'name']},
+                {'resource_id': resource['id']})
 
 
 def _validate_table(source, _format=u'csv', schema=None, **options):
