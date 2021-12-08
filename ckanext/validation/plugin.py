@@ -22,6 +22,7 @@ from ckanext.validation.helpers import (
     validation_extract_report_from_errors,
     dump_json_value,
     bootstrap_version,
+    validation_status,
 )
 from ckanext.validation.validators import (
     resource_schema_validator,
@@ -111,6 +112,7 @@ to create the database tables:
             u'validation_extract_report_from_errors': validation_extract_report_from_errors,
             u'dump_json_value': dump_json_value,
             u'bootstrap_version': bootstrap_version,
+            u'validation_status': validation_status,
         }
 
     # IResourceController
