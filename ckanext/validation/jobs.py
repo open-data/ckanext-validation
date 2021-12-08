@@ -13,6 +13,7 @@ from ckan.model import Session
 import ckan.lib.uploader as uploader
 
 import ckantoolkit as t
+from ckan.plugins.toolkit import config
 
 from ckanext.validation.model import Validation
 
@@ -22,7 +23,7 @@ log = logging.getLogger(__name__)
 
 def run_validation_job(resource):
 
-    log.debug(u'Validating resource {}'.format(resource['id']))
+    log.debug(u'Validating resource %s', resource['id'])
 
     try:
         validation = Session.query(Validation).filter(
@@ -87,6 +88,7 @@ def run_validation_job(resource):
     if report['table-count'] > 0:
         validation.status = u'success' if report[u'valid'] else u'failure'
         validation.report = report
+
     else:
         validation.status = u'error'
         validation.error = {
@@ -105,12 +107,28 @@ def run_validation_job(resource):
          'validation_status': validation.status,
          'validation_timestamp': validation.finished.isoformat()})
 
+    # load successfully validated resources to datastore using xloader
+    if validation.status == u'success':
+        if 'xloader' in config.get('ckan.plugins'):
+            t.get_action('xloader_submit')(
+                {'ignore_auth': True,
+                 'user': t.get_action('get_site_user')({'ignore_auth': True})[
+                     'name']},
+                {'resource_id': resource['id']})
+
 
 def _validate_table(source, _format=u'csv', schema=None, **options):
 
-    report = validate(source, format=_format, schema=schema, **options)
+    http_session = options.pop('http_session', None) or requests.Session()
 
-    log.debug(u'Validating source: {}'.format(source))
+    use_proxy = 'ckan.download_proxy' in t.config
+    if use_proxy:
+        proxy = t.config.get('ckan.download_proxy')
+        log.debug(u'Download resource for validation via proxy: %s', proxy)
+        http_session.proxies.update({'http': proxy, 'https': proxy})
+    report = validate(source, format=_format, schema=schema, http_session=http_session, **options)
+
+    log.debug(u'Validating source: %s', source)
 
     return report
 
