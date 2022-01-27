@@ -103,6 +103,11 @@ def resource_validation_run(context, data_dict):
         raise t.ValidationError(
             {u'url': u'Resource must have a valid URL or an uploaded file'})
 
+    # only uploaded files may be validated for now
+    if resource.get(u'url_type') != u'upload':
+        raise t.ValidationError(
+            {u'url': u'Only uploaded files can be validated.'})
+
     # Check if there was an existing validation for the resource
 
     Session = context['model'].Session
