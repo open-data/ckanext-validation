@@ -55,9 +55,6 @@ def run_validation_job(resource):
         {'ignore_auth': True}, {'id': resource['package_id']})
 
     source = None
-    if resource.get('url_type') != 'upload':
-        return  # only uploaded files may be validated for now
-
     url = resource.get('url')
     import urlparse
     url_parse = urlparse.urlsplit(url)
