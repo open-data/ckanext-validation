@@ -21,7 +21,6 @@ from ckanext.validation.utils import (
     delete_local_uploaded_file,
 )
 
-
 log = logging.getLogger(__name__)
 
 
@@ -184,6 +183,7 @@ def resource_validation_delete(context, data_dict):
     u'''
     Remove the validation job result for a particular resource.
     It also deletes the underlying Validation object.
+    It also removes validation metadata from the resource
 
     :param resource_id: id of the resource to remove validation from
     :type resource_id: string
@@ -211,6 +211,22 @@ def resource_validation_delete(context, data_dict):
 
     Session.delete(validation)
     Session.commit()
+
+    # Remove validation results from resource
+    resource = t.get_action(u'resource_show')(
+        {}, {u'id': data_dict[u'resource_id']})
+
+    resource.pop('validation_status')
+    resource.pop('validation_options')
+    resource.pop('validation_timestamp')
+
+    try:
+        t.get_action('resource_update')(
+            {'ignore_auth': True,
+             'user': t.get_action('get_site_user')({'ignore_auth': True})['name']},
+            resource)
+    except t.ObjectNotFound:
+        log.error('Unable to update validation status in resource ' + resource['id'])
 
 
 def resource_validation_run_batch(context, data_dict):

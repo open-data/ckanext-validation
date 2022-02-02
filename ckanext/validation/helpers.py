@@ -12,7 +12,11 @@ def get_validation_badge(resource, in_listing=False):
             config.get('ckanext.validation.show_badges_in_listings', True)):
         return ''
 
-    if not resource.get('validation_status'):
+    try:
+        validation = toolkit.get_action(u'resource_validation_show')(
+            {u'ignore_auth': True},
+            {u'resource_id': resource['id']})
+    except toolkit.ObjectNotFound:
         return ''
 
     messages = {
@@ -22,8 +26,8 @@ def get_validation_badge(resource, in_listing=False):
         'unknown': _('Data validation unknown'),
     }
 
-    if resource['validation_status'] in ['success', 'failure', 'error']:
-        status = resource['validation_status']
+    if validation.get('status') in ['success', 'failure', 'error']:
+        status = validation.get('status')
     else:
         status = 'unknown'
 
@@ -42,7 +46,7 @@ def get_validation_badge(resource, in_listing=False):
         validation_url=validation_url,
         badge_url=badge_url,
         alt=messages[status],
-        title=resource.get('validation_timestamp', ''))
+        title=validation.get('finished', ''))
 
 
 def validation_extract_report_from_errors(errors):
