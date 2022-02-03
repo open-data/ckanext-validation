@@ -8,6 +8,7 @@ import re
 import requests
 from sqlalchemy.orm.exc import NoResultFound
 from goodtables import validate
+from goodtables.error import set_language
 
 from ckan.model import Session
 import ckan.lib.uploader as uploader
@@ -75,18 +76,19 @@ def run_validation_job(resource):
 
     _format = resource[u'format'].lower()
 
-    report = _validate_table(source, _format=_format, schema=schema, **options)
+    reports = _validate_table(source, _format=_format, schema=schema, **options)
 
-    # Hide uploaded files
-    for table in report.get('tables', []):
-        if table['source'].startswith('/'):
-            table['source'] = resource['url']
-    for index, warning in enumerate(report.get('warnings', [])):
-        report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
+    for report in reports.values():
+        # Hide uploaded files
+        for table in report.get('tables', []):
+            if table['source'].startswith('/'):
+                table['source'] = resource['url']
+        for index, warning in enumerate(report.get('warnings', [])):
+            report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
 
     if report['table-count'] > 0:
         validation.status = u'success' if report[u'valid'] else u'failure'
-        validation.report = report
+        validation.reports = reports
     else:
         validation.status = u'error'
         validation.error = {
@@ -108,11 +110,16 @@ def run_validation_job(resource):
 
 def _validate_table(source, _format=u'csv', schema=None, **options):
 
-    report = validate(source, format=_format, schema=schema, **options)
+    reports = {}
+    for lang in t.config.get(
+            'ckanext.validation.locales_offered',
+            t.config.get('ckan.locales_offered', 'en')).split():
+        set_language(lang)
+        reports[lang] = validate(source, format=_format, schema=schema, **options)
 
     log.debug(u'Validating source: {}'.format(source))
 
-    return report
+    return reports
 
 
 def _get_site_user_api_key():
