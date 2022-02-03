@@ -3,6 +3,7 @@ import json
 
 from ckan.lib.helpers import url_for_static
 from ckantoolkit import url_for, _, config, asbool, literal
+import ckan.plugins.toolkit as toolkit
 
 
 def get_validation_badge(resource, in_listing=False):
@@ -89,3 +90,13 @@ def bootstrap_version():
         return '3'
     else:
         return '2'
+
+
+def validation_status(resource_id):
+    try:
+        validation = toolkit.get_action(u'resource_validation_show')(
+            {u'ignore_auth': True},
+            {u'resource_id': resource_id})
+        return validation.get('status')
+    except toolkit.ObjectNotFound:
+        return 'unknown'
