@@ -116,7 +116,7 @@ def resource_validation_run(context, data_dict):
     if validation:
         # Reset values
         validation.finished = None
-        validation.report = None
+        validation.reports = None
         validation.error = None
         validation.created = datetime.datetime.utcnow()
         validation.status = u'created'
@@ -409,7 +409,7 @@ def _validation_dictize(validation):
         'id': validation.id,
         'resource_id': validation.resource_id,
         'status': validation.status,
-        'report': validation.report,
+        'reports': validation.reports,
         'error': validation.error,
     }
     out['created'] = (
