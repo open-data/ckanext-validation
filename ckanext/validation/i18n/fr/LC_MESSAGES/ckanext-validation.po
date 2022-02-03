@@ -20,27 +20,27 @@ msgstr ""
 
 #: ckanext/validation/controller.py:36
 msgid "Unauthorized to read this validation report"
-msgstr ""
+msgstr "Non autorisé à lire ce rapport de validation"
 
 #: ckanext/validation/controller.py:39
 msgid "No validation report exists for this resource"
-msgstr ""
+msgstr "Aucun rapport de validation n'existe pour cette ressource"
 
 #: ckanext/validation/helpers.py:18
 msgid "Valid data"
-msgstr ""
+msgstr "Donnée valide"
 
 #: ckanext/validation/helpers.py:19
 msgid "Invalid data"
-msgstr ""
+msgstr "Donnée invalide"
 
 #: ckanext/validation/helpers.py:20
 msgid "Error during validation"
-msgstr ""
+msgstr "Erreur lors de la validation"
 
 #: ckanext/validation/helpers.py:21
 msgid "Data validation unknown"
-msgstr ""
+msgstr "Validation des données inconnue"
 
 #: ckanext/validation/helpers.py:56
 msgid ""
@@ -49,51 +49,55 @@ msgid ""
 "<a {params}>report</a> for details. Once you have resolved the issues,\n"
 "click the button below to replace the file."
 msgstr ""
+"\n"
+"Il y a des problèmes de validation avec ce fichier, veuillez consulter le\n"
+"<a {params}>rapport</a> pour plus de détails. Après avoir résolu les problèmes,\n"
+"cliquez sur le bouton ci-dessous pour remplacer le fichier"
 
 #: ckanext/validation/logic.py:550 ckanext/validation/logic.py:564
 msgid "Resource was not found."
-msgstr ""
+msgstr "La ressource n'a pas été trouvée"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:68
 msgid "Upload"
-msgstr ""
+msgstr "Télécharger"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:69
 msgid "Upload a Data Schema file from your computer"
-msgstr ""
+msgstr "Télécharger un fichier de schéma de données depuis votre ordinateur"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:76
 msgid "Link"
-msgstr ""
+msgstr "Lien"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:77
 msgid "URL for a Data Schema file available on the Internet"
-msgstr ""
+msgstr "URL d'un fichier de schéma de données disponible sur Internet"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:84
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:85
 msgid "Enter manually a Table Schema JSON object"
-msgstr ""
+msgstr "Entrez manuellement un objet JSON de schéma de table"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:89
 msgid "Clear"
-msgstr ""
+msgstr "Effacer"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:178
 #: ckanext/validation/templates/scheming/form_snippets/resource_schema.html:16
 msgid "Data Schema"
-msgstr ""
+msgstr "Schéma de données"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:180
 msgid "Data Schema URL"
-msgstr ""
+msgstr "URL du schéma de données"
 
 #: ckanext/validation/fanstatic/js/module-resource-schema.js:236
 msgid "Uploaded Data Schema"
-msgstr ""
+msgstr "Schéma de données téléchargé"
 
 #: ckanext/validation/fanstatic/js/module-validation-report.js:14
 msgid "IO Error"
@@ -828,17 +832,20 @@ msgid ""
 "href=\"https://github.com/frictionlessdata/ckanext-validation#validation-"
 "options\">here</a> for more information."
 msgstr ""
+" Vous pouvez passer un objet JSON d'options de validation. Voir <a "
+"href=\"https://github.com/frictionlessdata/ckanext-validation#validation-"
+"options\">ici</a> pour plus d'informations."
 
 #: ckanext/validation/templates/validation/validation_read.html:4
 msgid "Validation Report"
-msgstr ""
+msgstr "Rapport de validation"
 
 #: ckanext/validation/templates/validation/validation_read.html:27
 msgid "Validation timestamp"
-msgstr ""
+msgstr "Heure système de validation"
 
 #: ckanext/validation/templates/validation/snippets/validation_report_dialog.html:6
 #: ckanext/validation/templates/validation/snippets/validation_report_dialog_bs2.html:4
 msgid "Data Validation Report"
-msgstr ""
+msgstr "Rapport de validation des données"
 
