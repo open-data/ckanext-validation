@@ -4,6 +4,7 @@ import json
 from ckan.lib.helpers import url_for_static
 from ckantoolkit import url_for, _, config, asbool, literal
 import ckan.plugins.toolkit as toolkit
+from ckan.lib.helpers import render_datetime
 
 
 def get_validation_badge(resource, in_listing=False):
@@ -12,7 +13,11 @@ def get_validation_badge(resource, in_listing=False):
             config.get('ckanext.validation.show_badges_in_listings', True)):
         return ''
 
-    if not resource.get('validation_status'):
+    try:
+        validation = toolkit.get_action(u'resource_validation_show')(
+            {u'ignore_auth': True},
+            {u'resource_id': resource['id']})
+    except toolkit.ObjectNotFound:
         return ''
 
     messages = {
@@ -22,8 +27,8 @@ def get_validation_badge(resource, in_listing=False):
         'unknown': _('Data validation unknown'),
     }
 
-    if resource['validation_status'] in ['success', 'failure', 'error']:
-        status = resource['validation_status']
+    if validation.get('status') in ['success', 'failure', 'error']:
+        status = validation.get('status')
     else:
         status = 'unknown'
 
@@ -35,6 +40,9 @@ def get_validation_badge(resource, in_listing=False):
     badge_url = url_for_static(
         '/images/badges/data-{}-flat.svg'.format(status))
 
+    timestamp = render_datetime(validation.get('finished'), with_hours=True) \
+        if validation.get('finished') else ''
+
     return '''
 <a href="{validation_url}" class="validation-badge">
     <img src="{badge_url}" alt="{alt}" title="{title}"/>
@@ -42,7 +50,7 @@ def get_validation_badge(resource, in_listing=False):
         validation_url=validation_url,
         badge_url=badge_url,
         alt=messages[status],
-        title=resource.get('validation_timestamp', ''))
+        title=timestamp)
 
 
 def validation_extract_report_from_errors(errors):

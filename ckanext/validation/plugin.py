@@ -273,6 +273,14 @@ to create the database tables:
 
                 _run_async_validation(resource_id)
 
+    def before_delete(self, context, resource, resources):
+        try:
+            p.toolkit.get_action(u'resource_validation_delete')(
+                context, {'resource_id': resource['id']})
+            log.info('Validation report deleted for resource %s' % resource['id'])
+        except t.ObjectNotFound:
+            log.error('Validation report for resource %s does not exist' % resource['id'])
+
     # IPackageController
 
     def before_index(self, index_dict):
