@@ -19,9 +19,9 @@
 
         </div>
 
-        <h1 class="page-heading">{{ h.resource_display_name(resource) | truncate(50) }}
+        <h2 class="page-heading">{{ h.resource_display_name(resource) | truncate(50) }}
         {{ h.get_validation_badge(resource)|safe }}
-        </h1>
+        </h2>
 
         <div class="validation-details">
             <div>{{ _('Validation timestamp') }}: {{ h.render_datetime(resource.validation_timestamp, with_hours=True) }}</div>
@@ -30,7 +30,7 @@
             {% endif %}#}
         </div>
 
-        {% if validation.reports.get(h.lang()) %}
+        {% if validation.reports and validation.reports.get(h.lang()) %}
             <div id="report" {% if h.bootstrap_version() == '2' %}class="bs2"{% endif %} data-module="validation-report" data-module-report="{{ h.dump_json_value(validation.reports[h.lang()]) }}"></div>
         {% endif %}
 
