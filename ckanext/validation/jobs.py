@@ -82,7 +82,7 @@ def run_validation_job(resource):
             if table['source'].startswith('/'):
                 table['source'] = resource['url']
         for index, warning in enumerate(report.get('warnings', [])):
-            report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
+            report['warnings'][index] = warning.replace('"' + source + '"', '')
 
     if report['table-count'] > 0:
         validation.status = u'success' if report[u'valid'] else u'failure'
