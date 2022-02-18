@@ -2,7 +2,7 @@
 import json
 
 from ckan.lib.helpers import url_for_static
-from ckantoolkit import url_for, _, config, asbool, literal
+from ckantoolkit import url_for, _, config, asbool, literal, h
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.helpers import render_datetime
 
@@ -37,16 +37,19 @@ def get_validation_badge(resource, in_listing=False):
         id=resource['package_id'],
         resource_id=resource['id'])
 
-    badge_url = url_for_static(
-        '/images/badges/data-{}-flat.svg'.format(status))
+    if h.lang() != config.get('ckan.locale_default'):
+        badge_url = url_for_static(
+            '/images/badges/{lang}/data-{status}-flat.svg'.format(lang=h.lang(), status=status))
+    else:
+        badge_url = url_for_static(
+            '/images/badges/data-{}-flat.svg'.format(status))
 
     timestamp = render_datetime(validation.get('finished'), with_hours=True) \
         if validation.get('finished') else ''
 
-    return '''
-<a href="{validation_url}" class="validation-badge">
-    <img src="{badge_url}" alt="{alt}" title="{title}"/>
-</a>'''.format(
+    return unicode('<a href="{validation_url}" class="validation-badge"><img '
+                   'src="{badge_url}" alt="{alt}" title="{'
+                   'title}"/></a>').format(
         validation_url=validation_url,
         badge_url=badge_url,
         alt=messages[status],
