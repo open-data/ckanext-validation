@@ -37,13 +37,6 @@ def get_validation_badge(resource, in_listing=False):
         id=resource['package_id'],
         resource_id=resource['id'])
 
-    if h.lang() != config.get('ckan.locale_default'):
-        badge_url = url_for_static(
-            '/images/badges/{lang}/data-{status}-flat.svg'.format(lang=h.lang(), status=status))
-    else:
-        badge_url = url_for_static(
-            '/images/badges/data-{}-flat.svg'.format(status))
-
     timestamp = render_datetime(validation.get('finished'), with_hours=True) \
         if validation.get('finished') else ''
 
@@ -51,7 +44,8 @@ def get_validation_badge(resource, in_listing=False):
                    'src="{badge_url}" alt="{alt}" title="{'
                    'title}"/></a>').format(
         validation_url=validation_url,
-        badge_url=badge_url,
+        badge_url=url_for_static('/images/badges/{lang}/data-{status}-flat.svg'
+                                 .format(lang=h.lang(), status=status)),
         alt=messages[status],
         title=timestamp)
 
