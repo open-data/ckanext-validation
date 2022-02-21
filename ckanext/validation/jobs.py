@@ -82,7 +82,7 @@ def run_validation_job(resource):
             if table['source'].startswith('/'):
                 table['source'] = resource['url']
         for index, warning in enumerate(report.get('warnings', [])):
-            report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
+            report['warnings'][index] = warning.replace('"' + source + '"', '')
 
     if report['table-count'] > 0:
         validation.status = u'success' if report[u'valid'] else u'failure'
@@ -92,7 +92,6 @@ def run_validation_job(resource):
         validation.error = {
             'message': '\n'.join(report['warnings']) or u'No tables found'}
     validation.finished = datetime.datetime.utcnow()
-
     Session.add(validation)
     Session.commit()
 
@@ -103,6 +102,7 @@ def run_validation_job(resource):
          '_validation_performed': True},
         {'id': resource['id'],
          'validation_status': validation.status,
+         'validation_options': options,
          'validation_timestamp': validation.finished.isoformat()})
 
     # load successfully validated resources to datastore using xloader
@@ -125,9 +125,12 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
         http_session.proxies.update({'http': proxy, 'https': proxy})
 
     reports = {}
-    for lang in t.config.get(
-            'ckanext.validation.locales_offered',
-            t.config.get('ckan.locales_offered', 'en')).split():
+    langs = t.config.get('ckanext.validation.locales_offered',
+                         t.config.get('ckan.locales_offered', 'en'))
+    if not langs:
+        langs = t.config.get('ckan.locale_default', 'en')
+
+    for lang in langs.split():
         set_language(lang)
         reports[lang] = validate(source, format=_format, schema=schema, http_session=http_session, **options)
 
