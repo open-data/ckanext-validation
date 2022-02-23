@@ -89,7 +89,8 @@ this.ckan.module('validation-report', function (jQuery) {
         },
         this.el[0]
       )
-    $('.collapse').show()
+    $(".collapsed").removeClass( "collapsed" );
+    $(".collapse").addClass("show");
     }
   }
 });
