@@ -59,7 +59,10 @@ def validation_options_validator(value, context):
     if default_options:
         default_options = json.loads(default_options)
 
-        provided_options = json.loads(value)
+        try:
+            provided_options = json.loads(value)
+        except TypeError:
+            provided_options = {}
 
         default_options.update(provided_options)
 

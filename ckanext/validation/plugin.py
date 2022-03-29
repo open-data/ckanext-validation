@@ -5,6 +5,7 @@ import cgi
 import json
 
 import ckan.plugins as p
+from ckan.lib.plugins import DefaultTranslation
 import ckantoolkit as t
 
 from ckanext.validation import settings
@@ -22,6 +23,7 @@ from ckanext.validation.helpers import (
     validation_extract_report_from_errors,
     dump_json_value,
     bootstrap_version,
+    validation_status,
 )
 from ckanext.validation.validators import (
     resource_schema_validator,
@@ -37,7 +39,7 @@ from ckanext.validation.interfaces import IDataValidation
 log = logging.getLogger(__name__)
 
 
-class ValidationPlugin(p.SingletonPlugin):
+class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
     p.implements(p.IRoutes, inherit=True)
@@ -46,6 +48,7 @@ class ValidationPlugin(p.SingletonPlugin):
     p.implements(p.IPackageController, inherit=True)
     p.implements(p.ITemplateHelpers)
     p.implements(p.IValidators)
+    p.implements(p.ITranslation)
 
     # IConfigurer
 
@@ -111,6 +114,7 @@ to create the database tables:
             u'validation_extract_report_from_errors': validation_extract_report_from_errors,
             u'dump_json_value': dump_json_value,
             u'bootstrap_version': bootstrap_version,
+            u'validation_status': validation_status,
         }
 
     # IResourceController
@@ -268,6 +272,14 @@ to create the database tables:
                 del self.resources_to_validate[resource_id]
 
                 _run_async_validation(resource_id)
+
+    def before_delete(self, context, resource, resources):
+        try:
+            p.toolkit.get_action(u'resource_validation_delete')(
+                context, {'resource_id': resource['id']})
+            log.info('Validation report deleted for resource %s' % resource['id'])
+        except t.ObjectNotFound:
+            log.error('Validation report for resource %s does not exist' % resource['id'])
 
     # IPackageController
 

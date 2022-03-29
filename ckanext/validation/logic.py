@@ -21,7 +21,6 @@ from ckanext.validation.utils import (
     delete_local_uploaded_file,
 )
 
-
 log = logging.getLogger(__name__)
 
 
@@ -103,6 +102,11 @@ def resource_validation_run(context, data_dict):
         raise t.ValidationError(
             {u'url': u'Resource must have a valid URL or an uploaded file'})
 
+    # only uploaded files may be validated for now
+    if resource.get(u'url_type') != u'upload':
+        raise t.ValidationError(
+            {u'url': u'Only uploaded files can be validated.'})
+
     # Check if there was an existing validation for the resource
 
     Session = context['model'].Session
@@ -116,7 +120,7 @@ def resource_validation_run(context, data_dict):
     if validation:
         # Reset values
         validation.finished = None
-        validation.report = None
+        validation.reports = None
         validation.error = None
         validation.created = datetime.datetime.utcnow()
         validation.status = u'created'
@@ -179,6 +183,7 @@ def resource_validation_delete(context, data_dict):
     u'''
     Remove the validation job result for a particular resource.
     It also deletes the underlying Validation object.
+    It also removes validation metadata from the resource
 
     :param resource_id: id of the resource to remove validation from
     :type resource_id: string
@@ -206,6 +211,23 @@ def resource_validation_delete(context, data_dict):
 
     Session.delete(validation)
     Session.commit()
+
+    # Remove validation results from resource
+    resource = t.get_action(u'resource_show')(
+        {}, {u'id': data_dict[u'resource_id']})
+
+    try:
+        resource.pop(u'validation_status')
+        resource.pop(u'validation_options')
+        resource.pop(u'validation_timestamp')
+        t.get_action('resource_update')(
+            {'ignore_auth': True,
+             'user': t.get_action('get_site_user')({'ignore_auth': True})['name']},
+            resource)
+    except KeyError:
+        log.error('Unable to remove validation metadata from resource ' + resource['id'])
+    except t.ObjectNotFound:
+        log.error('Unable to update validation status in resource ' + resource['id'])
 
 
 def resource_validation_run_batch(context, data_dict):
@@ -409,7 +431,7 @@ def _validation_dictize(validation):
         'id': validation.id,
         'resource_id': validation.resource_id,
         'status': validation.status,
-        'report': validation.report,
+        'reports': validation.reports,
         'error': validation.error,
     }
     out['created'] = (

@@ -28,7 +28,7 @@ class Validation(Base):
     status = Column(Unicode, default=u'created')
     created = Column(DateTime, default=datetime.datetime.utcnow)
     finished = Column(DateTime)
-    report = Column(JSON)
+    reports = Column(JSON)
     error = Column(JSON)
 
 
