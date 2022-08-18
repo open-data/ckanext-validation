@@ -85,7 +85,7 @@ def resource_validation_run(context, data_dict):
         raise t.ValidationError({u'resource_id': u'Missing value'})
 
     resource = t.get_action(u'resource_show')(
-        {}, {u'id': data_dict[u'resource_id']})
+        context, {u'id': data_dict[u'resource_id']})
 
     # TODO: limit to sysadmins
     async_job = data_dict.get(u'async', True)
@@ -214,7 +214,7 @@ def resource_validation_delete(context, data_dict):
 
     # Remove validation results from resource
     resource = t.get_action(u'resource_show')(
-        {}, {u'id': data_dict[u'resource_id']})
+        context, {u'id': data_dict[u'resource_id']})
 
     try:
         resource.pop(u'validation_status')
