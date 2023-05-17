@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+import os
 import logging
 import cgi
 import json
@@ -39,14 +39,18 @@ from ckanext.validation.interfaces import IDataValidation
 log = logging.getLogger(__name__)
 
 
-class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
-    if toolkit.check_ckan_version(u'2.9'):
-        from ckanext.validation.plugin.flask_plugin import MixinPlugin
-        ckan_29_or_higher = True
-    else:
-        from ckanext.validation.plugin.pylons_plugin import MixinPlugin
-        ckan_29_or_higher = False
+if toolkit.check_ckan_version(u'2.9'):
+    from ckanext.validation.plugin.flask_plugin import MixinPlugin
+    ckan_29_or_higher = True
+else:
+    from ckanext.validation.plugin.pylons_plugin import MixinPlugin
+    ckan_29_or_higher = False
 
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+I18N_DIR = os.path.join(HERE, u"../i18n")
+
+class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
@@ -54,7 +58,12 @@ class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IPackageController, inherit=True)
     p.implements(p.ITemplateHelpers)
     p.implements(p.IValidators)
-    p.implements(p.ITranslation)
+    p.implements(p.ITranslation, inherit=True)
+
+    # ITranslation
+
+    def i18n_directory(self):
+        return I18N_DIR
 
     # IConfigurer
 
