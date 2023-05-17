@@ -6,7 +6,7 @@ import json
 
 import ckan.plugins as p
 from ckan.lib.plugins import DefaultTranslation
-import ckantoolkit as t
+import ckan.plugins.toolkit as toolkit
 
 from ckanext.validation import settings
 from ckanext.validation.model import tables_exist
@@ -40,9 +40,15 @@ log = logging.getLogger(__name__)
 
 
 class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
+    if toolkit.check_ckan_version(u'2.9'):
+        from ckanext.validation.plugin.flask_plugin import MixinPlugin
+        ckan_29_or_higher = True
+    else:
+        from ckanext.validation.plugin.pylons_plugin import MixinPlugin
+        ckan_29_or_higher = False
+
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
-    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IAuthFunctions)
     p.implements(p.IResourceController, inherit=True)
     p.implements(p.IPackageController, inherit=True)
@@ -53,18 +59,18 @@ class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     # IConfigurer
 
     def update_config(self, config_):
-        if not tables_exist():
-            log.critical(u'''
-The validation extension requires a database setup. Please run the following
-to create the database tables:
-    paster --plugin=ckanext-validation validation init-db
-''')
-        else:
-            log.debug(u'Validation tables exist')
+#        if not tables_exist():
+#            log.critical(u'''
+#The validation extension requires a database setup. Please run the following
+#to create the database tables:
+#    paster --plugin=ckanext-validation validation init-db
+#''')
+#        else:
+#            log.debug(u'Validation tables exist')
 
-        t.add_template_directory(config_, u'templates')
-        t.add_public_directory(config_, u'public')
-        t.add_resource(u'fanstatic', 'ckanext-validation')
+        toolkit.add_template_directory(config_, u'../templates')
+        toolkit.add_public_directory(config_, u',,.public')
+        toolkit.add_resource(u'../fanstatic', 'ckanext-validation')
 
     # IRoutes
 
@@ -308,11 +314,11 @@ to create the database tables:
 def _run_async_validation(resource_id):
 
     try:
-        t.get_action(u'resource_validation_run')(
+        toolkit.get_action(u'resource_validation_run')(
             {u'ignore_auth': True},
             {u'resource_id': resource_id,
              u'async': True})
-    except t.ValidationError as e:
+    except toolkit.ValidationError as e:
         log.warning(
             u'Could not run validation for resource {}: {}'.format(
                 resource_id, str(e)))
