@@ -33,7 +33,7 @@ def get_validation_badge(resource, in_listing=False):
         status = 'unknown'
 
     validation_url = url_for(
-        'validation_read',
+        'validation.read',
         id=resource['package_id'],
         resource_id=resource['id'])
 

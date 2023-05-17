@@ -3,10 +3,8 @@
 
 import sys
 
-from flask import Blueprint
-
 import ckan.plugins as plugins
-from ckanext.validation.controller import validation
+from ckanext.validation.blueprints import validation_blueprint
 from ckanext.validation.model import create_tables, tables_exist
 
 class MixinPlugin(plugins.SingletonPlugin):
@@ -17,7 +15,6 @@ class MixinPlugin(plugins.SingletonPlugin):
         import click
 
         @click.group("validation")
-        @click.command("init-db")
         def init_db():
             if tables_exist():
                 click.echo("Validation tables already exist")
@@ -31,6 +28,4 @@ class MixinPlugin(plugins.SingletonPlugin):
 
     
     def get_blueprint(self):
-        blueprint = Blueprint('validation', __name__)
-        blueprint.add_url_rule("/dataset/{id}/resource/{resource_id}/validation", view_func=validation, endpoint='validation_read', methods=['GET'])
-        return blueprint
+        return [validation_blueprint]

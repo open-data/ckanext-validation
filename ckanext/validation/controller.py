@@ -6,7 +6,7 @@ from ckan.plugins.toolkit import (
     abort, _, render, get_action)
 
 
-def validation(resource_id):
+def validation(id, resource_id):
     try:
         validation = get_action(u'resource_validation_show')(
             {u'user': c.user},
@@ -28,6 +28,7 @@ def validation(resource_id):
             u'validation': validation,
             u'resource': resource,
             u'dataset': dataset,
+            u'pkg_dict': dataset,
         })
 
     except NotAuthorized:

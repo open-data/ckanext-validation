@@ -50,7 +50,7 @@ else:
 HERE = os.path.abspath(os.path.dirname(__file__))
 I18N_DIR = os.path.join(HERE, u"../i18n")
 
-class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
+class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
@@ -78,21 +78,8 @@ class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
 #            log.debug(u'Validation tables exist')
 
         toolkit.add_template_directory(config_, u'../templates')
-        toolkit.add_public_directory(config_, u',,.public')
+        toolkit.add_public_directory(config_, u'../public')
         toolkit.add_resource(u'../fanstatic', 'ckanext-validation')
-
-    # IRoutes
-
-    def before_map(self, map_):
-
-        controller = u'ckanext.validation.controller:ValidationController'
-
-        map_.connect(
-            u'validation_read',
-            u'/dataset/{id}/resource/{resource_id}/validation',
-            controller=controller, action=u'validation')
-
-        return map_
 
     # IActions
 
