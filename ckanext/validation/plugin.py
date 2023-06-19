@@ -7,6 +7,10 @@ import json
 import ckan.plugins as p
 from ckan.lib.plugins import DefaultTranslation
 import ckantoolkit as t
+from ckan.model.domain_object import DomainObjectOperation
+from ckan.model.resource import Resource
+
+import ckanapi
 
 from ckanext.validation import settings
 from ckanext.validation.model import tables_exist
@@ -49,6 +53,7 @@ class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITemplateHelpers)
     p.implements(p.IValidators)
     p.implements(p.ITranslation)
+    p.implements(p.IDomainObjectModification)
 
     # IConfigurer
 
@@ -304,6 +309,26 @@ to create the database tables:
             'validation_options_validator': validation_options_validator,
         }
 
+    # IDomainObjectModification
+
+    def notify(self, entity, operation):
+        # type: (ckan.model.Package|ckan.model.Resource, DomainObjectOperation) -> None
+        """
+        Runs before_commit to database for Packages and Resources.
+        We only want to check for changed Resources for this.
+        We want to check if values have changed, namely the url and the format.
+        See: ckan/model/modification.py.DomainObjectModificationExtension
+        """
+        if operation != DomainObjectOperation.changed:
+            return
+        if not isinstance(entity, Resource):
+            return
+
+        if t.h.asbool(t.config.get('ckanext.validation.limit_validation_reports', False)) \
+        and (not getattr(entity, 'format', u'').lower() in settings.SUPPORTED_FORMATS \
+        or getattr(entity, 'url_changed', False)):
+            p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[entity.id])
+
 
 def _run_async_validation(resource_id):
 
@@ -316,3 +341,34 @@ def _run_async_validation(resource_id):
         log.warning(
             u'Could not run validation for resource {}: {}'.format(
                 resource_id, str(e)))
+
+
+def _remove_unsupported_resource_validation_reports(resource_id):
+    """
+    Callback to remove unsupported validation reports.
+    Controlled by config value: ckanext.validation.limit_validation_reports.
+    Double check the resource format. Only supported Validation formats should have validation reports.
+    If the resource format is not supported, we should delete the validation reports.
+    """
+    lc = ckanapi.LocalCKAN()
+    try:
+        res = lc.action.resource_show(id=resource_id)
+        pkg = lc.action.package_show(id=res['package_id'])
+    except t.ObjectNotFound:
+        log.error('Resource %s does not exist.' % res['id'])
+        return
+
+    # only remove validation reports from dataset types
+    if pkg['type'] != 'dataset':
+        return
+
+    if not res.get(u'format', u'').lower() in settings.SUPPORTED_FORMATS \
+    and (res['url_type'] == 'upload' or res['url_type'] == '') \
+    and res.get(u'validation_status', False):
+        log.info('Unsupported resource format "{}". Deleting validation reports for resource {}'
+            .format(res.get(u'format', u'').lower(), res['id']))
+        try:
+            lc.action.resource_validation_delete(resource_id=res['id'])
+            log.info('Validation reports deleted for resource %s' % res['id'])
+        except t.ObjectNotFound:
+            log.error('Validation reports for resource %s do not exist' % res['id'])
