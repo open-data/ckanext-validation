@@ -217,12 +217,16 @@ def resource_validation_delete(context, data_dict):
         context, {u'id': data_dict[u'resource_id']})
 
     try:
-        resource.pop(u'validation_status')
-        resource.pop(u'validation_options')
-        resource.pop(u'validation_timestamp')
+        if resource.get('validation_status', False):
+            resource.pop(u'validation_status')
+        if resource.get('validation_options', False):
+            resource.pop(u'validation_options')
+        if resource.get('validation_timestamp', False):
+            resource.pop(u'validation_timestamp')
+        user = t.get_action('get_site_user')({'ignore_auth': True})
         t.get_action('resource_update')(
             {'ignore_auth': True,
-             'user': t.get_action('get_site_user')({'ignore_auth': True})['name']},
+             'user': user.get('name', 'ckan-system')},
             resource)
     except KeyError:
         log.error('Unable to remove validation metadata from resource ' + resource['id'])

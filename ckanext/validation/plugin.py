@@ -7,8 +7,6 @@ import json
 import ckan.plugins as p
 from ckan.lib.plugins import DefaultTranslation
 import ckantoolkit as t
-from ckan.model.domain_object import DomainObjectOperation
-from ckan.model.resource import Resource
 
 import ckanapi
 
@@ -53,7 +51,6 @@ class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITemplateHelpers)
     p.implements(p.IValidators)
     p.implements(p.ITranslation)
-    p.implements(p.IDomainObjectModification)
 
     # IConfigurer
 
@@ -278,6 +275,9 @@ to create the database tables:
 
                 _run_async_validation(resource_id)
 
+            if _should_remove_unsupported_resource_validation_reports(data_dict):
+                p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[resource_id])
+
     def before_delete(self, context, resource, resources):
         try:
             p.toolkit.get_action(u'resource_validation_delete')(
@@ -309,26 +309,6 @@ to create the database tables:
             'validation_options_validator': validation_options_validator,
         }
 
-    # IDomainObjectModification
-
-    def notify(self, entity, operation):
-        # type: (ckan.model.Package|ckan.model.Resource, DomainObjectOperation) -> None
-        """
-        Runs before_commit to database for Packages and Resources.
-        We only want to check for changed Resources for this.
-        We want to check if values have changed, namely the url and the format.
-        See: ckan/model/modification.py.DomainObjectModificationExtension
-        """
-        if operation != DomainObjectOperation.changed:
-            return
-        if not isinstance(entity, Resource):
-            return
-
-        if t.h.asbool(t.config.get('ckanext.validation.limit_validation_reports', False)) \
-        and (not getattr(entity, 'format', u'').lower() in settings.SUPPORTED_FORMATS \
-        or getattr(entity, 'url_changed', False)):
-            p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[entity.id])
-
 
 def _run_async_validation(resource_id):
 
@@ -341,6 +321,17 @@ def _run_async_validation(resource_id):
         log.warning(
             u'Could not run validation for resource {}: {}'.format(
                 resource_id, str(e)))
+
+
+def _should_remove_unsupported_resource_validation_reports(res_dict):
+    if not t.h.asbool(t.config.get('ckanext.validation.limit_validation_reports', False)):
+        return False
+    return ((not res_dict.get('format', u'').lower() in settings.SUPPORTED_FORMATS
+                or res_dict.get('url_changed', False))
+            and (res_dict.get('url_type') == 'upload'
+                or res_dict.get('url_type') == '')
+            and (res_dict.get('validation_status', False)
+                or res_dict.get('extras', {}).get('validation_status', False)))
 
 
 def _remove_unsupported_resource_validation_reports(resource_id):
@@ -362,9 +353,7 @@ def _remove_unsupported_resource_validation_reports(resource_id):
     if pkg['type'] != 'dataset':
         return
 
-    if not res.get(u'format', u'').lower() in settings.SUPPORTED_FORMATS \
-    and (res['url_type'] == 'upload' or res['url_type'] == '') \
-    and res.get(u'validation_status', False):
+    if _should_remove_unsupported_resource_validation_reports(res):
         log.info('Unsupported resource format "{}". Deleting validation reports for resource {}'
             .format(res.get(u'format', u'').lower(), res['id']))
         try:
