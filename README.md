@@ -121,6 +121,14 @@ To prevent the extension from adding the validation badges next to the resources
 
     ckanext.validation.show_badges_in_listings = False
 
+### Clean validation reports
+
+To prevent the extension from keeping validation reports for unsupported Resource formats. Defaults to False:
+
+    ckanext.validation.clean_validation_reports = True
+
+Once a Resource is updated and its format is not supported in ckanext.validation.formats, a job will be enqueued to remove the validation reports from the Resource.
+
 
 ## How it works
 

@@ -337,7 +337,7 @@ def _should_remove_unsupported_resource_validation_reports(res_dict):
 def _remove_unsupported_resource_validation_reports(resource_id):
     """
     Callback to remove unsupported validation reports.
-    Controlled by config value: ckanext.validation.limit_validation_reports.
+    Controlled by config value: ckanext.validation.clean_validation_reports.
     Double check the resource format. Only supported Validation formats should have validation reports.
     If the resource format is not supported, we should delete the validation reports.
     """
@@ -349,7 +349,7 @@ def _remove_unsupported_resource_validation_reports(resource_id):
         log.error('Resource %s does not exist.' % res['id'])
         return
 
-    # only remove validation reports from dataset types
+    # only remove validation reports from dataset types (canada fork only)
     if pkg['type'] != 'dataset':
         return
 
