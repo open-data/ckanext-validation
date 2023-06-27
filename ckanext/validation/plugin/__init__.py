@@ -146,7 +146,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         elif schema_url:
             if (not isinstance(schema_url, basestring) or
                     not schema_url.lower()[:4] == u'http'):
-                raise t.ValidationError({u'schema_url': 'Must be a valid URL'})
+                raise toolkit.ValidationError({u'schema_url': 'Must be a valid URL'})
             data_dict[u'schema'] = schema_url
         elif schema_json:
             data_dict[u'schema'] = schema_json
@@ -285,7 +285,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             p.toolkit.get_action(u'resource_validation_delete')(
                 context, {'resource_id': resource['id']})
             log.info('Validation report deleted for resource %s' % resource['id'])
-        except t.ObjectNotFound:
+        except toolkit.ObjectNotFound:
             log.error('Validation report for resource %s does not exist' % resource['id'])
 
     # IPackageController
@@ -326,7 +326,7 @@ def _run_async_validation(resource_id):
 
 
 def _should_remove_unsupported_resource_validation_reports(res_dict):
-    if not t.h.asbool(t.config.get('ckanext.validation.clean_validation_reports', False)):
+    if not toolkit.h.asbool(toolkit.config.get('ckanext.validation.clean_validation_reports', False)):
         return False
     return ((not res_dict.get('format', u'').lower() in settings.SUPPORTED_FORMATS
                 or res_dict.get('url_changed', False))
@@ -347,7 +347,7 @@ def _remove_unsupported_resource_validation_reports(resource_id):
     try:
         res = lc.action.resource_show(id=resource_id)
         pkg = lc.action.package_show(id=res['package_id'])
-    except t.ObjectNotFound:
+    except toolkit.ObjectNotFound:
         log.error('Resource %s does not exist.' % res['id'])
         return
 
@@ -361,5 +361,5 @@ def _remove_unsupported_resource_validation_reports(resource_id):
         try:
             lc.action.resource_validation_delete(resource_id=res['id'])
             log.info('Validation reports deleted for resource %s' % res['id'])
-        except t.ObjectNotFound:
+        except toolkit.ObjectNotFound:
             log.error('Validation reports for resource %s do not exist' % res['id'])
