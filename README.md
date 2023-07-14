@@ -109,7 +109,12 @@ You can also provide [validation options](#validation-options) that will be used
 
 	ckanext.validation.default_validation_options={
 	    "skip_checks": ["blank-rows", "duplicate-headers"],
-    	"headers": 3}
+	    "headers": 3}
+
+Or overrides to ensure some validation options are used site-wide, regardless of the schema provided in the resource:
+
+	ckanext.validation.override_validation_options={
+            "encoding": "utf8"}
 
 Make sure to use indentation if the value spans multiple lines otherwise it won't be parsed.
 
