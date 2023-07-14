@@ -102,7 +102,6 @@ def run_validation_job(resource):
          '_validation_performed': True},
         {'id': resource['id'],
          'validation_status': validation.status,
-         'validation_options': options,
          'validation_timestamp': validation.finished.isoformat()})
 
     # load successfully validated resources to datastore using xloader
