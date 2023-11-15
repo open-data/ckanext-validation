@@ -1,9 +1,6 @@
 ckantoolkit>=0.0.3
-
-# we use a custom goodtables fork
+# we use a custom goodtables fork (canada fork only)
 #goodtables==1.5.1
-
-# cannot connect to github on servers
+# servers cannot call to github (canada fork only)
 #-e git+https://github.com/ckan/ckanext-scheming.git#egg=ckanext-scheming
-
 ckanapi
