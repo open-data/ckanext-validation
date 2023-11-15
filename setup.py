@@ -79,9 +79,6 @@ setup(
         'ckan.test_plugins': [
             'test_validation_plugin = ckanext.validation.tests.test_interfaces:TestPlugin',
         ],
-        'paste.paster_command': [
-            'validation = ckanext.validation.commands:Validation'
-        ],
         'babel.extractors': [
             'ckan = ckan.lib.extract:extract_ckan'
         ]
