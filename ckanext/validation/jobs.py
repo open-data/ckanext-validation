@@ -47,7 +47,7 @@ def run_validation_job(resource):
         options = {}
 
     resource_options = resource.get(u'validation_options')
-    if resource_options and isinstance(resource_options, basestring):
+    if resource_options and isinstance(resource_options, str):
         resource_options = json.loads(resource_options)
     if resource_options:
         options.update(resource_options)
@@ -65,7 +65,7 @@ def run_validation_job(resource):
     source = storage.get_url_from_filename(resource['id'], filename)
 
     schema = resource.get(u'schema')
-    if schema and isinstance(schema, basestring):
+    if schema and isinstance(schema, str):
         if schema.startswith('http'):
             r = requests.get(schema)
             schema = r.json()

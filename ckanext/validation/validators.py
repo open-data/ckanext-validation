@@ -15,7 +15,7 @@ def resource_schema_validator(value, context):
 
     msg = None
 
-    if isinstance(value, basestring):
+    if isinstance(value, str):
 
         if value.lower().startswith('http'):
             return value

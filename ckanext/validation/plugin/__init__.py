@@ -146,7 +146,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         if isinstance(schema_upload, cgi.FieldStorage):
             data_dict[u'schema'] = schema_upload.file.read()
         elif schema_url:
-            if (not isinstance(schema_url, basestring) or
+            if (not isinstance(schema_url, str) or
                     not schema_url.lower()[:4] == u'http'):
                 raise toolkit.ValidationError({u'schema_url': 'Must be a valid URL'})
             data_dict[u'schema'] = schema_url

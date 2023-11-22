@@ -288,14 +288,14 @@ def resource_validation_run_batch(context, data_dict):
     count_resources = 0
 
     dataset_ids = data_dict.get('dataset_ids')
-    if isinstance(dataset_ids, basestring):
+    if isinstance(dataset_ids, str):
         try:
             dataset_ids = json.loads(dataset_ids)
         except ValueError as e:
             dataset_ids = [dataset_ids]
 
     search_params = data_dict.get('query')
-    if isinstance(search_params, basestring):
+    if isinstance(search_params, str):
         try:
             search_params = json.loads(search_params)
         except ValueError as e:
