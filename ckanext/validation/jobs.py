@@ -57,8 +57,8 @@ def run_validation_job(resource):
 
     source = None
     url = resource.get('url')
-    from urllib.parse import urlparse
-    url_parse = urlparse.urlsplit(url)
+    from urllib.parse import urlsplit
+    url_parse = urlsplit(url)
     filename = url_parse.path.split('/')[-1]
     from ckanext.cloudstorage.storage import ResourceCloudStorage
     storage = ResourceCloudStorage(resource)
