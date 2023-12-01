@@ -130,6 +130,9 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     if not langs:
         langs = t.config.get('ckan.locale_default', 'en')
 
+    if 'row_limit' not in options:
+        options['row_limit'] = t.config.get('ckanext.validation.row_limit', 1000)
+
     for lang in langs.split():
         set_language(lang)
         reports[lang] = validate(source, format=_format, schema=schema, http_session=http_session, **options)
