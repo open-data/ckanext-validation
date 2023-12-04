@@ -3,7 +3,6 @@
 import logging
 import datetime
 import json
-import re
 
 import requests
 from sqlalchemy.orm.exc import NoResultFound
@@ -11,10 +10,10 @@ from goodtables import validate
 from goodtables.error import set_language
 
 from ckan.model import Session
-import ckan.lib.uploader as uploader
 
 import ckantoolkit as t
 from ckan.plugins.toolkit import config
+from ckan.lib.uploader import get_resource_uploader
 
 from ckanext.validation.model import Validation
 
@@ -52,17 +51,11 @@ def run_validation_job(resource):
     if resource_options:
         options.update(resource_options)
 
-    dataset = t.get_action('package_show')(
-        {'ignore_auth': True}, {'id': resource['package_id']})
-
-    source = None
-    url = resource.get('url')
-    import urlparse
-    url_parse = urlparse.urlsplit(url)
-    filename = url_parse.path.split('/')[-1]
-    from ckanext.cloudstorage.storage import ResourceCloudStorage
-    storage = ResourceCloudStorage(resource)
-    source = storage.get_url_from_filename(resource['id'], filename)
+    # get url from uploader (canada fork only)
+    #TODO: upstream contribution??
+    upload = get_resource_uploader(resource)
+    source = upload.get_path(resource['id'])
+    log.info('Resource %s using uploader: %s', resource['id'], type(upload).__name__)
 
     schema = resource.get(u'schema')
     if schema and isinstance(schema, basestring):
