@@ -123,7 +123,11 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     if not langs:
         langs = t.config.get('ckan.locale_default', 'en')
 
+    # extra logging (canada fork only)
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
+    if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
+        for skip_check in options.get('skip_checks'):
+            log.debug(u'Skipping check: %s', skip_check)
 
     for lang in langs.split():
         set_language(lang)
