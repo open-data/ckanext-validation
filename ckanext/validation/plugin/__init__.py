@@ -252,6 +252,13 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             del context['_validation_performed']
             return
 
+        if context.get('_canada_is_doing_xloader'):
+            # (canada fork only): prevent re-validating from updates
+            # and patches from the ckanext-xloader plugin.
+            log.debug('Skipping validation for resource %s because Xloader is just patching...', data_dict['id'])
+            del context['_canada_is_doing_xloader']
+            return
+
         if is_dataset:
             for resource in data_dict.get(u'resources', []):
                 if resource[u'id'] in self.resources_to_validate:
