@@ -5,5 +5,3 @@ ckantoolkit>=0.0.3
 
 # cannot connect to github on servers
 #-e git+https://github.com/ckan/ckanext-scheming.git#egg=ckanext-scheming
-
-ckanapi
