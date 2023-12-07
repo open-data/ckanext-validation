@@ -286,6 +286,13 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
                     # not via one of the resource actions, we cannot prevent the resubmission of
                     # all of the resources to Validation. `package_update` will not know which
                     # resources have actually changed or not.
+                    #
+                    # With that said, the blueprints (package edit and create form) use `allow_partial_update`
+                    # context, so there will not actually be any resources when updating a package's metadata
+                    # in the web browser. This is only an issue with the API calls to `/api/action/package_update`
+                    # and `/api/action/package_patch`, and anywhere else in extensions that do not use the
+                    # `allow_partial_update` context.
+                    #
                     # TODO: this will be solved with the upstream fix to IResourceController hooks
                     self._handle_validation_for_resource(context, resource)
 
