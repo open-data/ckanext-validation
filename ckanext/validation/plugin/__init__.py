@@ -303,10 +303,8 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             # (canada fork only): delete the context key,value noting
             # that the `resource_delete` action is happening.
             # TODO: remove after upstream fix to IResourceController hooks
-            if '__resource_delete' in context:
-                del context['__resource_delete']
-            if '__resource_update' in context:
-                del context['__resource_update']
+            context.pop('__resource_delete', None)
+            context.pop('__resource_update', None)
 
             if resource_id in self.resources_to_validate:
                 for plugin in p.PluginImplementations(IDataValidation):
