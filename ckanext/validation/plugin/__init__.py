@@ -8,8 +8,6 @@ import ckan.plugins as p
 from ckan.lib.plugins import DefaultTranslation
 import ckan.plugins.toolkit as toolkit
 
-import ckanapi
-
 from ckanext.validation import settings
 from ckanext.validation.model import tables_exist
 from ckanext.validation.logic import (
@@ -156,6 +154,11 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         return data_dict
 
     def before_create(self, context, data_dict):
+        # (canada fork only): we add a context key,value here so we know that
+        # in `after_create` that the `resource_create` action method happened.
+        # There is no `before_create` for packages, only in `resource_create`.
+        # TODO: remove after upstream fix to IResourceController hooks
+        context['__resource_create'] = True
         return self._process_schema_fields(data_dict)
 
     resources_to_validate = {}
@@ -167,14 +170,18 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         if not get_create_mode_from_config() == u'async':
             return
 
-        if is_dataset:
+        if is_dataset and not context.get('__resource_create'):
             for resource in data_dict.get(u'resources', []):
                 self._handle_validation_for_resource(context, resource)
         else:
-            # This is a resource. Resources don't need to be handled here
-            # as there is always a previous `package_update` call that will
-            # trigger the `before_update` and `after_update` hooks
-            pass
+            # This is a resource.
+            # (canada fork only): we want to run Validation on a single resource
+            # if it is created via `resource_create`. We know this from the `before_create`
+            # hook in this class. There is no `before_create` for packages.
+            # TODO: revert after upstream fix to IResourceController hooks
+            if '__resource_create' in context:
+                del context['__resource_create']
+            self._handle_validation_for_resource(context, data_dict)
 
     def _data_dict_is_dataset(self, data_dict):
         return (
@@ -207,6 +214,11 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             _run_async_validation(resource[u'id'])
 
     def before_update(self, context, current_resource, updated_resource):
+        # (canada fork only): add key,value to be used in `after_update`
+        # to prevent all resources from re-validating after a single update.
+        # There is no `before_update` for packages, only in `resource_update`.
+        # TODO: remove after upstream fix to IResourceController hooks
+        context['__resource_update'] = True
 
         updated_resource = self._process_schema_fields(updated_resource)
 
@@ -251,10 +263,17 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             # Ugly, but needed to avoid circular loops caused by the
             # validation job calling resource_patch (which calls
             # package_update)
+            # (canada fork only) extra logging
+            log.debug('Skipping, Validation has already been done.')
             del context['_validation_performed']
             return
 
-        if is_dataset:
+        # (canada fork only): check if `resource_create` or `resource_update` or `resource_delete`
+        #  is happening. `__resource_create` will be delete in the `after_create` hook.
+        # `__resource_delete` and `__resource_update` will be deleted here in `after_update` for resources.
+        # TODO: remove after upstream fix to IResourceController hooks
+        if is_dataset and not context.get('__resource_create') and \
+        not context.get('__resource_delete') and not context.get('__resource_update'):
             for resource in data_dict.get(u'resources', []):
                 if resource[u'id'] in self.resources_to_validate:
                     # This is part of a resource_update call, it will be
@@ -263,11 +282,31 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
                 else:
                     # This is an actual package_update call, validate the
                     # resources if necessary
+                    #
+                    # (canada fork only):
+                    # NOTE: if a legit `package_update` or `package_patch` action happens,
+                    # not via one of the resource actions, we cannot prevent the resubmission of
+                    # all of the resources to Validation. `package_update` will not know which
+                    # resources have actually changed or not.
+                    #
+                    # With that said, the blueprints (package edit and create form) use `allow_partial_update`
+                    # context, so there will not actually be any resources when updating a package's metadata
+                    # in the web browser. This is only an issue with the API calls to `/api/action/package_update`
+                    # and `/api/action/package_patch`, and anywhere else in extensions that do not use the
+                    # `allow_partial_update` context.
+                    #
+                    # TODO: this will be solved with the upstream fix to IResourceController hooks
                     self._handle_validation_for_resource(context, resource)
 
         else:
             # This is a resource
             resource_id = data_dict[u'id']
+
+            # (canada fork only): delete the context key,value noting
+            # that the `resource_delete` action is happening.
+            # TODO: remove after upstream fix to IResourceController hooks
+            context.pop('__resource_delete', None)
+            context.pop('__resource_update', None)
 
             if resource_id in self.resources_to_validate:
                 for plugin in p.PluginImplementations(IDataValidation):
@@ -283,6 +322,10 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
                 p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[resource_id])
 
     def before_delete(self, context, resource, resources):
+        # (canada fork only): add key,value to be used in `after_update`
+        # to prevent all resources from re-validating after a single deletion.
+        # TODO: remove after upstream fix to IResourceController hooks
+        context['__resource_delete'] = True
         try:
             p.toolkit.get_action(u'resource_validation_delete')(
                 context, {'resource_id': resource['id']})
@@ -345,10 +388,12 @@ def _remove_unsupported_resource_validation_reports(resource_id):
     Double check the resource format. Only supported Validation formats should have validation reports.
     If the resource format is not supported, we should delete the validation reports.
     """
-    lc = ckanapi.LocalCKAN()
+    user = p.toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
+    context = {"user": user['name']}
+
     try:
-        res = lc.action.resource_show(id=resource_id)
-        pkg = lc.action.package_show(id=res['package_id'])
+        res = toolkit.get_action('resource_show')(context, {"id": resource_id})
+        pkg = toolkit.get_action('package_show')(context, {"id": res['package_id']})
     except toolkit.ObjectNotFound:
         log.error('Resource %s does not exist.' % res['id'])
         return
@@ -361,7 +406,7 @@ def _remove_unsupported_resource_validation_reports(resource_id):
         log.info('Unsupported resource format "{}". Deleting validation reports for resource {}'
             .format(res.get(u'format', u'').lower(), res['id']))
         try:
-            lc.action.resource_validation_delete(resource_id=res['id'])
+            toolkit.get_action('resource_validation_delete')(context, {"resource_id": res['id']})
             log.info('Validation reports deleted for resource %s' % res['id'])
         except toolkit.ObjectNotFound:
             log.error('Validation reports for resource %s do not exist' % res['id'])
