@@ -263,8 +263,6 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             # Ugly, but needed to avoid circular loops caused by the
             # validation job calling resource_patch (which calls
             # package_update)
-            # (canada fork only) extra logging
-            log.debug('Skipping, Validation has already been done.')
             del context['_validation_performed']
             return
 
