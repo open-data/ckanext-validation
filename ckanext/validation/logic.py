@@ -10,7 +10,6 @@ import ckan.plugins as plugins
 import ckan.lib.uploader as uploader
 
 import ckantoolkit as t
-import ckanapi
 
 from ckanext.validation.model import Validation
 from ckanext.validation.interfaces import IDataValidation
@@ -225,9 +224,8 @@ def resource_validation_delete(context, data_dict):
     if 'validation_timestamp' in resource:
         resource.pop(u'validation_timestamp')
 
-    lc = ckanapi.LocalCKAN()
     try:
-        lc.action.resource_update(resource)
+        plugins.toolkit.get_action('resource_update')(context, resource)
     except KeyError:
         log.error('Unable to remove validation metadata from resource ' + resource['id'])
     except t.ObjectNotFound:
