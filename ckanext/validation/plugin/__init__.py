@@ -317,7 +317,8 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
                 _run_async_validation(resource_id)
 
             if _should_remove_unsupported_resource_validation_reports(data_dict):
-                p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[resource_id])
+                p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[resource_id],
+                                      title="Remove Validation Reports for Unsupported Format or Type")
 
     def before_delete(self, context, resource, resources):
         # (canada fork only): add key,value to be used in `after_update`
