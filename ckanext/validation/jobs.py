@@ -129,7 +129,7 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
         for skip_check in options.get('skip_checks'):
             log.debug(u'Skipping check: %s', skip_check)
     if options.get('dialect') and _format in options.get('dialect'):
-        log.debug(u'Using Static Dialect for %s: %r', _format, options.get('dialect')[_format])
+        log.debug(u'Using Static Dialect for %s: %s', _format, json.dumps(options.get('dialect')[_format]))
 
     for lang in langs.split():
         set_language(lang)
