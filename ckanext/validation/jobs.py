@@ -143,8 +143,8 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
         log.debug(u'Skipping checks: %r', options.get('skip_checks'))
     if options.get('dialect') and _format in options.get('dialect'):
         log.debug(u'Using Static Dialect for %s: %r', _format, options.get('dialect')[_format])
-    if options.get('encoding') and _format in options.get('dialect'):
-        log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding')[_format])
+    if options.get('encoding'):
+        log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
 
     for lang in langs.split():
         set_language(lang)
