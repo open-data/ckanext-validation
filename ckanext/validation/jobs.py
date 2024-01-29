@@ -140,10 +140,11 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     # extra logging (canada fork only)
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
     if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
-        for skip_check in options.get('skip_checks'):
-            log.debug(u'Skipping check: %s', skip_check)
+        log.debug(u'Skipping checks: %r', options.get('skip_checks'))
     if options.get('dialect') and _format in options.get('dialect'):
-        log.debug(u'Using Static Dialect for %s: %s', _format, json.dumps(options.get('dialect')[_format]))
+        log.debug(u'Using Static Dialect for %s: %r', _format, options.get('dialect')[_format])
+    if options.get('encoding') and _format in options.get('dialect'):
+        log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding')[_format])
 
     for lang in langs.split():
         set_language(lang)
