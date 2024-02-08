@@ -91,6 +91,7 @@ setup(
     # have to change the message extractors, you can read more about babel
     # message extraction at
     # http://babel.pocoo.org/docs/messages/#extraction-method-mapping-and-configuration
+    #TODO: prevent vendor js extractions
     message_extractors={
         'ckanext': [
             ('**.py', 'python', None),

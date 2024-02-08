@@ -873,14 +873,6 @@ msgid ""
 " - Make the column name at most 63 characters long."
 msgstr ""
 
-#: ckanext/validation/fanstatic/vendor/goodtables-ui/goodtables-ui.min.js:11
-msgid "{|}~])/,autolink:/^<(scheme:[^sx00-x1f<>]*|email)>/,url:r,tag:\"^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>\",link:/^!?[(label)](s*(href)(?:s+(title))?s*)/,reflink:/^!?[(label)][(?!s*])((?:\\[[]]?|[^[]\\])+)]/,nolink:/^!?[(?!s*])((?:[[^[]]*]|\\[[]]|[^[]])*)](?:[])?/,strong:/^__([^s_])__(?!_)|^**([^s*])**(?!*)|^__([^s][sS]*?[^s])__(?!_)|^**([^s][sS]*?[^s])**(?!*)/,em:/^_([^s_])_(?!_)|^*([^s*<[])*(?!*)|^_([^s<][sS]*?[^s_])_(?!_|[^spunctuation])|^_([^s_<][sS]*?[^s])_(?!_|[^spunctuation])|^*([^s<\"][sS]*?[^s*])*(?!*|[^spunctuation])|^*([^s*\"<[][sS]*?[^s])*(?!*)/,code:/^("
-msgstr ""
-
-#: ckanext/validation/fanstatic/vendor/goodtables-ui/goodtables-ui.min.js:11
-msgid "{|}~])/g,l._scheme=/[a-zA-Z][a-zA-Z0-9+.-]{1,31}/,l._email=/[a-zA-Z0-9.!#$%&'*+/=?^_"
-msgstr ""
-
 #: ckanext/validation/templates/scheming/form_snippets/validation_options.html:16
 msgid ""
 "You can pass a JSON object of validation options. See <a "
