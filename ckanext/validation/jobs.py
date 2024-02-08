@@ -186,17 +186,13 @@ def ds_headers_check(cells, sample=None):
 
         errored = False
 
-        if not is_valid_field_name(cell.get('value')):
+        if not is_valid_field_name(cell['value']):
             errors.append(Error('datastore-invalid-header', cell,
-                                message_substitutions={
-                                    'value': cell.get('value'),
-                                }))
+                                message_substitutions={'value': cell['value'],}))
             errored = True
-        if len(cell.get('value')) > 63:
+        if len(cell['value']) > 63:
             errors.append(Error('datastore-header-too-long', cell,
-                                message_substitutions={
-                                    'value': cell.get('value'),
-                                }))
+                                message_substitutions={'value': cell['value'],}))
             errored = True
 
         if errored:

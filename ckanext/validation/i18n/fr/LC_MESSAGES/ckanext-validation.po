@@ -828,20 +828,20 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`maximum-length-constraint` dans le {validator}."
 
+# TODO: add in FR translation
 #: ckanext/validation/fanstatic/js/module-validation-report.js:86
-#TODO: add in FR translation
 msgid "Invalid Header for DataStore"
 msgstr ""
 
+# TODO: add in FR translation
 #: ckanext/validation/fanstatic/js/module-validation-report.js:87
-#TODO: add in FR translation
 msgid ""
 "Column name {value} in column {column_number} is not valid for a "
 "DataStore header"
 msgstr ""
 
+# TODO: add in FR translation
 #: ckanext/validation/fanstatic/js/module-validation-report.js:88
-#TODO: add in FR translation
 msgid ""
 "Column name is invalid for a DataStore header.\n"
 "\n"
@@ -852,20 +852,20 @@ msgid ""
 " - Make sure the column name is not blank."
 msgstr ""
 
+# TODO: add in FR translation
 #: ckanext/validation/fanstatic/js/module-validation-report.js:94
-#TODO: add in FR translation
 msgid "Header Too Long for DataStore"
 msgstr ""
 
+# TODO: add in FR translation
 #: ckanext/validation/fanstatic/js/module-validation-report.js:95
-#TODO: add in FR translation
 msgid ""
 "Column name {value} in column {column_number} is too long for a DataStore"
 " header"
 msgstr ""
 
+# TODO: add in FR translation
 #: ckanext/validation/fanstatic/js/module-validation-report.js:96
-#TODO: add in FR translation
 msgid ""
 "Column name is too long for a DataStore header.\n"
 "\n"
