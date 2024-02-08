@@ -13,7 +13,7 @@ from goodtables.error import set_language
 from ckan.model import Session
 
 import ckantoolkit as t
-from ckan.plugins.toolkit import config, _
+from ckan.plugins.toolkit import config
 from ckan.lib.uploader import get_resource_uploader
 from ckanext.datastore.helpers import is_valid_field_name
 
@@ -173,7 +173,7 @@ def _get_site_user_api_key():
 def ds_headers_check(cells, sample=None):
     # type: (list[dict], list[dict]|None) -> list[Error|None]
     """
-    Checks header values againast the DataStore constraints
+    Checks header values against the DataStore constraints
 
     Canada Fork Only: TODO: upstream contribution??
     """
