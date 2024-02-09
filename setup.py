@@ -91,11 +91,10 @@ setup(
     # have to change the message extractors, you can read more about babel
     # message extraction at
     # http://babel.pocoo.org/docs/messages/#extraction-method-mapping-and-configuration
-    #TODO: prevent vendor js extractions
     message_extractors={
         'ckanext': [
             ('**.py', 'python', None),
-            ('**.js', 'javascript', None),
+            ('**/js/**.js', 'javascript', None),  # (canada fork only): modified to exclude vendor js folder
             ('**/templates/**.html', 'ckan', None),
         ],
     }
