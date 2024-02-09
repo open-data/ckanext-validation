@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: goodtables 2.5.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-03 01:13+0000\n"
+"POT-Creation-Date: 2024-02-08 21:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -16,33 +16,33 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
+"Generated-By: Babel 2.7.0\n"
 
-#: ckanext/validation/controller.py:36
+#: ckanext/validation/controller.py:35
 msgid "Unauthorized to read this validation report"
 msgstr "Non autorisé à lire ce rapport de validation"
 
-#: ckanext/validation/controller.py:39
+#: ckanext/validation/controller.py:38
 msgid "No validation report exists for this resource"
 msgstr "Aucun rapport de validation n'existe pour cette ressource"
 
-#: ckanext/validation/helpers.py:18
+#: ckanext/validation/helpers.py:24
 msgid "Valid data"
 msgstr "Donnée valide"
 
-#: ckanext/validation/helpers.py:19
+#: ckanext/validation/helpers.py:25
 msgid "Invalid data"
 msgstr "Donnée invalide"
 
-#: ckanext/validation/helpers.py:20
+#: ckanext/validation/helpers.py:26
 msgid "Error during validation"
 msgstr "Erreur lors de la validation"
 
-#: ckanext/validation/helpers.py:21
+#: ckanext/validation/helpers.py:27
 msgid "Data validation unknown"
 msgstr "Validation des données inconnue"
 
-#: ckanext/validation/helpers.py:56
+#: ckanext/validation/helpers.py:62
 msgid ""
 "\n"
 "There are validation issues with this file, please see the\n"
@@ -50,11 +50,13 @@ msgid ""
 "click the button below to replace the file."
 msgstr ""
 "\n"
-"Il y a des problèmes de validation avec ce fichier, veuillez consulter le\n"
-"<a {params}>rapport</a> pour plus de détails. Après avoir résolu les problèmes,\n"
+"Il y a des problèmes de validation avec ce fichier, veuillez consulter le"
+"\n"
+"<a {params}>rapport</a> pour plus de détails. Après avoir résolu les "
+"problèmes,\n"
 "cliquez sur le bouton ci-dessous pour remplacer le fichier"
 
-#: ckanext/validation/logic.py:550 ckanext/validation/logic.py:564
+#: ckanext/validation/logic.py:574 ckanext/validation/logic.py:588
 msgid "Resource was not found."
 msgstr "La ressource n'a pas été trouvée"
 
@@ -99,17 +101,17 @@ msgstr "URL du schéma de données"
 msgid "Uploaded Data Schema"
 msgstr "Schéma de données téléchargé"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:14
+#: ckanext/validation/fanstatic/js/module-validation-report.js:8
 msgid "IO Error"
 msgstr "Erreur d'entrée ou de sortie"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:15
+#: ckanext/validation/fanstatic/js/module-validation-report.js:9
 msgid "The data source returned an IO Error of type {error_type}"
 msgstr ""
 "La source de données a généré une erreur d'entrée ou de sortie de type "
 "{error_type}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:16
+#: ckanext/validation/fanstatic/js/module-validation-report.js:10
 msgid ""
 "Data reading error because of IO error.\n"
 "\n"
@@ -121,17 +123,17 @@ msgstr ""
 "Solution:\n"
 "- Corriger le chemin d'accès."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:19
+#: ckanext/validation/fanstatic/js/module-validation-report.js:12
 msgid "HTTP Error"
 msgstr "Erreur HTTP"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:20
+#: ckanext/validation/fanstatic/js/module-validation-report.js:13
 msgid "The data source returned an HTTP error with a status code of {status_code}"
 msgstr ""
 "La source de données a généré une erreur HTTP avec le code d'état "
 "{status_code}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:21
+#: ckanext/validation/fanstatic/js/module-validation-report.js:14
 msgid ""
 "Data reading error because of HTTP error.\n"
 "\n"
@@ -143,11 +145,11 @@ msgstr ""
 "Solution :\n"
 "- Corriger le lien URL."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:24
+#: ckanext/validation/fanstatic/js/module-validation-report.js:15
 msgid "Source Error"
 msgstr "Erreur de la source"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:25
+#: ckanext/validation/fanstatic/js/module-validation-report.js:16
 msgid ""
 "The data source has not supported or has inconsistent contents; no "
 "tabular data can be extracted"
@@ -155,7 +157,7 @@ msgstr ""
 "La source de données n'a pas pris en charge le contenuou celui-ci est "
 "incohérent; aucune donnée tabulaire ne peut être extraite"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:26
+#: ckanext/validation/fanstatic/js/module-validation-report.js:17
 msgid ""
 "Data reading error because of not supported or inconsistent contents.\n"
 "\n"
@@ -171,17 +173,17 @@ msgstr ""
 "tableau ou en tableaux/objets).\n"
 "- Configurer correctement les paramètres de la source dans {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:29
+#: ckanext/validation/fanstatic/js/module-validation-report.js:18
 msgid "Scheme Error"
 msgstr "Erreur de schéma"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:30
+#: ckanext/validation/fanstatic/js/module-validation-report.js:19
 msgid "The data source is in an unknown scheme; no tabular data can be extracted"
 msgstr ""
 "Le schéma de la source de données est inconnu; aucune donnée tabulaire ne"
 " peut être extraite."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:31
+#: ckanext/validation/fanstatic/js/module-validation-report.js:20
 msgid ""
 "Data reading error because of incorrect scheme.\n"
 "\n"
@@ -196,17 +198,17 @@ msgstr ""
 "`http`).\n"
 "- Configurer correctement les schémas dans {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:34
+#: ckanext/validation/fanstatic/js/module-validation-report.js:21
 msgid "Format Error"
 msgstr "Erreur de format"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:35
+#: ckanext/validation/fanstatic/js/module-validation-report.js:22
 msgid "The data source is in an unknown format; no tabular data can be extracted"
 msgstr ""
 "Le format de la source de données est inconnu; aucune donnée tabulaire ne"
 " peut être extraite"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:36
+#: ckanext/validation/fanstatic/js/module-validation-report.js:23
 msgid ""
 "Data reading error because of incorrect format.\n"
 "\n"
@@ -221,15 +223,15 @@ msgstr ""
 "de `txt` à `csv`).\n"
 "- Configurer correctement le format dans {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:39
+#: ckanext/validation/fanstatic/js/module-validation-report.js:24
 msgid "Encoding Error"
 msgstr "Erreur d'encodage"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:40
+#: ckanext/validation/fanstatic/js/module-validation-report.js:25
 msgid "The data source could not be successfully decoded with {encoding} encoding"
 msgstr "La source des données n'a pas pu être décodée avec l'encodage {encoding}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:41
+#: ckanext/validation/fanstatic/js/module-validation-report.js:26
 msgid ""
 "Data reading error because of an encoding problem.\n"
 "\n"
@@ -243,15 +245,15 @@ msgstr ""
 "- Corriger la source des données.\n"
 "- Configurer correctement l'encodage dans {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:44
+#: ckanext/validation/fanstatic/js/module-validation-report.js:27
 msgid "Blank Header"
 msgstr "En-tête vide"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:45
+#: ckanext/validation/fanstatic/js/module-validation-report.js:28
 msgid "Header in column {column_number} is blank"
 msgstr "L'en-tête de la colonne {column_number} est vide."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:46
+#: ckanext/validation/fanstatic/js/module-validation-report.js:29
 msgid ""
 "A column in the header row is missing a value. Column names should be "
 "provided.\n"
@@ -273,11 +275,11 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`blank-header` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:49
+#: ckanext/validation/fanstatic/js/module-validation-report.js:30
 msgid "Duplicate Header"
 msgstr "En-tête en double"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:50
+#: ckanext/validation/fanstatic/js/module-validation-report.js:31
 msgid ""
 "Header in column {column_number} is duplicated to header in column(s) "
 "{column_numbers}"
@@ -285,7 +287,7 @@ msgstr ""
 "L'en-tête de la colonne {column_number} est dupliquédans l'en-tête de la "
 "colonne ou des colonnes {column_numbers}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:51
+#: ckanext/validation/fanstatic/js/module-validation-report.js:32
 msgid ""
 "Two columns in the header row have the same value. Column names should be"
 " unique.\n"
@@ -306,15 +308,15 @@ msgstr ""
 "-Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`duplicate-header` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:54
+#: ckanext/validation/fanstatic/js/module-validation-report.js:33
 msgid "Blank Row"
 msgstr "Ligne vide"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:55
+#: ckanext/validation/fanstatic/js/module-validation-report.js:34
 msgid "Row {row_number} is completely blank"
 msgstr "La ligne {row_number} est complètement vide"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:56
+#: ckanext/validation/fanstatic/js/module-validation-report.js:35
 msgid ""
 "This row is empty. A row should contain at least one value.\n"
 "\n"
@@ -330,17 +332,17 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`duplicate-header` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:59
+#: ckanext/validation/fanstatic/js/module-validation-report.js:36
 msgid "Duplicate Row"
 msgstr "Ligne en double"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:60
+#: ckanext/validation/fanstatic/js/module-validation-report.js:37
 msgid "Row {row_number} is duplicated to row(s) {row_numbers}"
 msgstr ""
 "La ligne {row_number} est dupliqué dans la ligne ou les lignes "
 "{row_number}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:61
+#: ckanext/validation/fanstatic/js/module-validation-report.js:38
 msgid ""
 "The exact same data has been seen in another row.\n"
 "\n"
@@ -358,17 +360,17 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`duplicate-row` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:64
+#: ckanext/validation/fanstatic/js/module-validation-report.js:39
 msgid "Extra Value"
 msgstr "Valeur supplémentaire"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:65
+#: ckanext/validation/fanstatic/js/module-validation-report.js:40
 msgid "Row {row_number} has an extra value in column {column_number}"
 msgstr ""
 "La ligne {row_number} contient une valeur supplémentaire dans la colonne "
 "{column_number}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:66
+#: ckanext/validation/fanstatic/js/module-validation-report.js:41
 msgid ""
 "This row has more values compared to the header row (the first row in the"
 " data source). A key concept is that all the rows in tabular data must "
@@ -389,17 +391,17 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`extra-value` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:69
+#: ckanext/validation/fanstatic/js/module-validation-report.js:42
 msgid "Missing Value"
 msgstr "Valeur manquante"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:70
+#: ckanext/validation/fanstatic/js/module-validation-report.js:43
 msgid "Row {row_number} has a missing value in column {column_number}"
 msgstr ""
 "Il manque une valeur dans la ligne {row_number} de la colonne "
 "{column_number}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:71
+#: ckanext/validation/fanstatic/js/module-validation-report.js:44
 msgid ""
 "This row has less values compared to the header row (the first row in the"
 " data source). A key concept is that all the rows in tabular data must "
@@ -419,15 +421,15 @@ msgstr ""
 " dans cette ligne.- Si l'erreur doit être ignorée, il faut désactiver la "
 "vérification `missing-value` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:74
+#: ckanext/validation/fanstatic/js/module-validation-report.js:45
 msgid "Table Schema Error"
 msgstr "Erreur dans le schéma de données"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:75
+#: ckanext/validation/fanstatic/js/module-validation-report.js:46
 msgid "Table Schema error: {error_message}"
 msgstr "Erreur dans le schéma de données: {error_message}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:76
+#: ckanext/validation/fanstatic/js/module-validation-report.js:47
 msgid ""
 "Provided schema is not valid.\n"
 "\n"
@@ -442,11 +444,11 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver les vérifications de "
 "schéma dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:79
+#: ckanext/validation/fanstatic/js/module-validation-report.js:48
 msgid "Non-Matching Header"
 msgstr "En-tête non concordante"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:80
+#: ckanext/validation/fanstatic/js/module-validation-report.js:49
 msgid ""
 "Header in column {column_number} doesn't match field name {field_name} in"
 " the schema"
@@ -454,7 +456,7 @@ msgstr ""
 "L'en-tête de la colonne {column_number} ne correspond pas au nom du champ"
 " {field_name} dans le schéma"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:81
+#: ckanext/validation/fanstatic/js/module-validation-report.js:50
 msgid ""
 "One of the data source headers doesn't match the field name defined in "
 "the schema.\n"
@@ -473,15 +475,15 @@ msgstr ""
 "-  Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`non-matching-header`dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:84
+#: ckanext/validation/fanstatic/js/module-validation-report.js:51
 msgid "Extra Header"
 msgstr "En-tête supplémentaire"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:85
+#: ckanext/validation/fanstatic/js/module-validation-report.js:52
 msgid "There is an extra header in column {column_number}"
 msgstr "La colonne {column_number} compte une en-tête supplémentaire."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:86
+#: ckanext/validation/fanstatic/js/module-validation-report.js:53
 msgid ""
 "The first row of the data source contains header that doesn't exist in "
 "the schema.\n"
@@ -501,15 +503,15 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`missing-header` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:89
+#: ckanext/validation/fanstatic/js/module-validation-report.js:54
 msgid "Missing Header"
 msgstr "En-tête manquante"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:90
+#: ckanext/validation/fanstatic/js/module-validation-report.js:55
 msgid "There is a missing header in column {column_number}"
 msgstr "Il manque une en-tête dans la colonne {column_number}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:91
+#: ckanext/validation/fanstatic/js/module-validation-report.js:56
 msgid ""
 "Based on the schema there should be a header that is missing in the first"
 " row of the data source.\n"
@@ -521,11 +523,11 @@ msgid ""
 "{validator}."
 msgstr ""
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:94
+#: ckanext/validation/fanstatic/js/module-validation-report.js:57
 msgid "Type or Format Error"
 msgstr "Erreur de type ou de format"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:95
+#: ckanext/validation/fanstatic/js/module-validation-report.js:58
 msgid ""
 "The value {value} in row {row_number} and column {column_number} is not "
 "type {field_type} and format {field_format}"
@@ -534,7 +536,7 @@ msgstr ""
 "{column_number} ne correspond pas au type {field_type} et au format "
 "{field_format}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:96
+#: ckanext/validation/fanstatic/js/module-validation-report.js:59
 msgid ""
 "The value does not match the schema type and format for this field.\n"
 "\n"
@@ -555,11 +557,11 @@ msgstr ""
 "`type-or-format-error` dans le {validator}. Dans ce cas, toutes les "
 "vérifications du schéma pour les valeurs de la ligne seront ignorées."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:99
+#: ckanext/validation/fanstatic/js/module-validation-report.js:60
 msgid "Required Constraint"
 msgstr "Contrainte requise"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:100
+#: ckanext/validation/fanstatic/js/module-validation-report.js:61
 msgid ""
 "Column {column_number} is a required field, but row {row_number} has no "
 "value"
@@ -567,7 +569,7 @@ msgstr ""
 "La colonne {column_number} est un champ obligatoire, mais la ligne "
 "{row_number} ne contient aucune valeur."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:101
+#: ckanext/validation/fanstatic/js/module-validation-report.js:62
 msgid ""
 "This field is a required field, but it contains no value.\n"
 "\n"
@@ -587,11 +589,11 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`required-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:104
+#: ckanext/validation/fanstatic/js/module-validation-report.js:63
 msgid "Pattern Constraint"
 msgstr "Contrainte de forme"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:105
+#: ckanext/validation/fanstatic/js/module-validation-report.js:64
 msgid ""
 "The value {value} in row {row_number} and column {column_number} does not"
 " conform to the pattern constraint of {constraint}"
@@ -600,7 +602,7 @@ msgstr ""
 "{column_number} ne correspond pas à la contrainte de forme de "
 "{constraint}"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:106
+#: ckanext/validation/fanstatic/js/module-validation-report.js:65
 msgid ""
 "This field value should conform to constraint pattern.\n"
 "\n"
@@ -620,11 +622,11 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`pattern-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:109
+#: ckanext/validation/fanstatic/js/module-validation-report.js:66
 msgid "Unique Constraint"
 msgstr "Contrainte unique"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:110
+#: ckanext/validation/fanstatic/js/module-validation-report.js:67
 msgid ""
 "Rows {row_numbers} has unique constraint violation in column "
 "{column_number}"
@@ -632,7 +634,7 @@ msgstr ""
 "Les lignes {row_numbers} présente une violation de contrainte unique dans"
 " la colonne {column_number}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:111
+#: ckanext/validation/fanstatic/js/module-validation-report.js:68
 msgid ""
 "This field is a unique field but it contains a value that has been used "
 "in another row.\n"
@@ -654,11 +656,11 @@ msgstr ""
 "- Si l'erreur doit être ignorée, il faut désactiver la vérification "
 "`unique-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:114
+#: ckanext/validation/fanstatic/js/module-validation-report.js:69
 msgid "Enumerable Constraint"
 msgstr "Contrainte d'énumération"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:115
+#: ckanext/validation/fanstatic/js/module-validation-report.js:70
 msgid ""
 "The value {value} in row {row_number} and column {column_number} does not"
 " conform to the given enumeration: {constraint}"
@@ -666,7 +668,7 @@ msgstr ""
 "La valeur {value} dans la ligne {row_number} et la colonne "
 "{column_number} ne correspond pas à l'énumération donnée : {constraint}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:116
+#: ckanext/validation/fanstatic/js/module-validation-report.js:71
 msgid ""
 "This field value should be equal to one of the values in the enumeration "
 "constraint.\n"
@@ -688,11 +690,11 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`enumerable-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:119
+#: ckanext/validation/fanstatic/js/module-validation-report.js:72
 msgid "Minimum Constraint"
 msgstr "Contrainte minimale"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:120
+#: ckanext/validation/fanstatic/js/module-validation-report.js:73
 msgid ""
 "The value {value} in row {row_number} and column {column_number} does not"
 " conform to the minimum constraint of {constraint}"
@@ -701,7 +703,7 @@ msgstr ""
 "{column_number} ne correspond pas à la contrainte minimale de "
 "{constraint}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:121
+#: ckanext/validation/fanstatic/js/module-validation-report.js:74
 msgid ""
 "This field value should be greater or equal than constraint value.\n"
 "\n"
@@ -722,11 +724,11 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`minimum-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:124
+#: ckanext/validation/fanstatic/js/module-validation-report.js:75
 msgid "Maximum Constraint"
 msgstr "Contrainte maximale"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:125
+#: ckanext/validation/fanstatic/js/module-validation-report.js:76
 msgid ""
 "The value {value} in row {row_number} and column {column_number} does not"
 " conform to the maximum constraint of {constraint}"
@@ -735,7 +737,7 @@ msgstr ""
 "{column_number} ne correspond pas à la contrainte maximale de "
 "{constraint}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:126
+#: ckanext/validation/fanstatic/js/module-validation-report.js:77
 msgid ""
 "This field value should be less or equal than constraint value.\n"
 "\n"
@@ -756,11 +758,11 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`maximum-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:129
+#: ckanext/validation/fanstatic/js/module-validation-report.js:78
 msgid "Minimum Length Constraint"
 msgstr "Contrainte du nombre minimal de caractères"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:130
+#: ckanext/validation/fanstatic/js/module-validation-report.js:79
 msgid ""
 "The value {value} in row {row_number} and column {column_number} does not"
 " conform to the minimum length constraint of {constraint}"
@@ -769,7 +771,7 @@ msgstr ""
 "{column_number} ne correspond pas à la contrainte du nombre minimal de "
 "caractères de {constraint}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:131
+#: ckanext/validation/fanstatic/js/module-validation-report.js:80
 msgid ""
 "A lenght of this field value should be greater or equal than schema "
 "constraint value.\n"
@@ -791,11 +793,11 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`minimum-length-constraint` dans le {validator}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:134
+#: ckanext/validation/fanstatic/js/module-validation-report.js:81
 msgid "Maximum Length Constraint"
 msgstr "Contrainte du nombre maximal de caractères"
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:135
+#: ckanext/validation/fanstatic/js/module-validation-report.js:82
 msgid ""
 "The value {value} in row {row_number} and column {column_number} does not"
 " conform to the maximum length constraint of {constraint}"
@@ -804,7 +806,7 @@ msgstr ""
 "{column_number} ne correspond pas à la contrainte du nombre maximal de "
 "caractères de {constraint}."
 
-#: ckanext/validation/fanstatic/js/module-validation-report.js:136
+#: ckanext/validation/fanstatic/js/module-validation-report.js:83
 msgid ""
 "A lenght of this field value should be less or equal than schema "
 "constraint value.\n"
@@ -826,9 +828,54 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`maximum-length-constraint` dans le {validator}."
 
+# TODO: add in FR translation
+#: ckanext/validation/fanstatic/js/module-validation-report.js:86
+msgid "Invalid Header for DataStore"
+msgstr ""
+
+# TODO: add in FR translation
+#: ckanext/validation/fanstatic/js/module-validation-report.js:87
+msgid ""
+"Column name {value} in column {column_number} is not valid for a "
+"DataStore header"
+msgstr ""
+
+# TODO: add in FR translation
+#: ckanext/validation/fanstatic/js/module-validation-report.js:88
+msgid ""
+"Column name is invalid for a DataStore header.\n"
+"\n"
+" How it could be resolved:\n"
+" - Remove any leading underscores('_') from the column name.\n"
+" - Remove any leading for trailing white space from the column name.\n"
+" - Remove any double quotes('\"') from the column name.\n"
+" - Make sure the column name is not blank."
+msgstr ""
+
+# TODO: add in FR translation
+#: ckanext/validation/fanstatic/js/module-validation-report.js:94
+msgid "Header Too Long for DataStore"
+msgstr ""
+
+# TODO: add in FR translation
+#: ckanext/validation/fanstatic/js/module-validation-report.js:95
+msgid ""
+"Column name {value} in column {column_number} is too long for a DataStore"
+" header"
+msgstr ""
+
+# TODO: add in FR translation
+#: ckanext/validation/fanstatic/js/module-validation-report.js:96
+msgid ""
+"Column name is too long for a DataStore header.\n"
+"\n"
+" How it could be resolved:\n"
+" - Make the column name at most 63 characters long."
+msgstr ""
+
 #: ckanext/validation/templates/scheming/form_snippets/validation_options.html:16
 msgid ""
-" You can pass a JSON object of validation options. See <a "
+"You can pass a JSON object of validation options. See <a "
 "href=\"https://github.com/frictionlessdata/ckanext-validation#validation-"
 "options\">here</a> for more information."
 msgstr ""
@@ -837,6 +884,7 @@ msgstr ""
 "options\">ici</a> pour plus d'informations."
 
 #: ckanext/validation/templates/validation/validation_read.html:4
+#: ckanext/validation/templates/validation/validation_read.html:11
 msgid "Validation Report"
 msgstr "Rapport de validation"
 
