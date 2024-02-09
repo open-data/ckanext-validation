@@ -85,7 +85,7 @@ this.ckan.module('validation-report', function (jQuery) {
       spec['errors']['datastore-invalid-header'] = {
         "name": this._("Invalid Header for DataStore"),
         "message": this._("Column name {value} in column {column_number} is not valid for a DataStore header"),
-        "description": this._("Column name is invalid for a DataStore header.\n\n How it could be resolved:\n - Remove any leading underscores('_') from the column name.\n - Remove any leading for trailing white space from the column name.\n - Remove any double quotes('\"') from the column name.\n - Make sure the column name is not blank."),
+        "description": this._("Column name is invalid for a DataStore header.\n\n How it could be resolved:\n - Remove any leading underscores('_') from the column name.\n - Remove any leading or trailing white space from the column name.\n - Remove any double quotes('\"') from the column name.\n - Make sure the column name is not blank."),
         "type": "custom",
         "context": "head",
         "weight": 7
