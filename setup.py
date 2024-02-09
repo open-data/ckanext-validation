@@ -94,7 +94,7 @@ setup(
     message_extractors={
         'ckanext': [
             ('**.py', 'python', None),
-            ('**.js', 'javascript', None),
+            ('**/js/**.js', 'javascript', None),  # (canada fork only): modified to exclude vendor js folder
             ('**/templates/**.html', 'ckan', None),
         ],
     }
