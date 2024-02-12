@@ -81,23 +81,6 @@ this.ckan.module('validation-report', function (jQuery) {
       spec['errors']['maximum-length-constraint'].name = this._("Maximum Length Constraint");
       spec['errors']['maximum-length-constraint'].message = this._("The value {value} in row {row_number} and column {column_number} does not conform to the maximum length constraint of {constraint}");
       spec['errors']['maximum-length-constraint'].description = this._("A lenght of this field value should be less or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximumLength` constraint in the schema.\n - If this error should be ignored disable `maximum-length-constraint` check in {validator}.");
-      // (canada fork only): custom specs for DataStore header errors
-      spec['errors']['datastore-invalid-header'] = {
-        "name": this._("Invalid Header for DataStore"),
-        "message": this._("Column name {value} in column {column_number} is not valid for a DataStore header"),
-        "description": this._("Column name is invalid for a DataStore header.\n\n How it could be resolved:\n - Remove any leading underscores('_') from the column name.\n - Remove any leading or trailing white space from the column name.\n - Remove any double quotes('\"') from the column name.\n - Make sure the column name is not blank."),
-        "type": "custom",
-        "context": "head",
-        "weight": 7
-      };
-      spec['errors']['datastore-header-too-long'] = {
-        "name": this._("Header Too Long for DataStore"),
-        "message": this._("Column name {value} in column {column_number} is too long for a DataStore header"),
-        "description": this._("Column name is too long for a DataStore header.\n\n How it could be resolved:\n - Make the column name at most 63 characters long."),
-        "type": "custom",
-        "context": "head",
-        "weight": 7
-      };
       goodtablesUI.render(
         goodtablesUI.Report,
         {
