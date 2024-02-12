@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: goodtables 2.5.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-09 15:24+0000\n"
+"POT-Creation-Date: 2024-02-12 16:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -828,51 +828,6 @@ msgstr ""
 "- Si l'erreur doit être ignoré, il faut désactiver la vérification "
 "`maximum-length-constraint` dans le {validator}."
 
-# TODO: add in FR translation
-#: ckanext/validation/fanstatic/js/module-validation-report.js:86
-msgid "Invalid Header for DataStore"
-msgstr ""
-
-# TODO: add in FR translation
-#: ckanext/validation/fanstatic/js/module-validation-report.js:87
-msgid ""
-"Column name {value} in column {column_number} is not valid for a "
-"DataStore header"
-msgstr ""
-
-# TODO: add in FR translation
-#: ckanext/validation/fanstatic/js/module-validation-report.js:88
-msgid ""
-"Column name is invalid for a DataStore header.\n"
-"\n"
-" How it could be resolved:\n"
-" - Remove any leading underscores('_') from the column name.\n"
-" - Remove any leading or trailing white space from the column name.\n"
-" - Remove any double quotes('\"') from the column name.\n"
-" - Make sure the column name is not blank."
-msgstr ""
-
-# TODO: add in FR translation
-#: ckanext/validation/fanstatic/js/module-validation-report.js:94
-msgid "Header Too Long for DataStore"
-msgstr ""
-
-# TODO: add in FR translation
-#: ckanext/validation/fanstatic/js/module-validation-report.js:95
-msgid ""
-"Column name {value} in column {column_number} is too long for a DataStore"
-" header"
-msgstr ""
-
-# TODO: add in FR translation
-#: ckanext/validation/fanstatic/js/module-validation-report.js:96
-msgid ""
-"Column name is too long for a DataStore header.\n"
-"\n"
-" How it could be resolved:\n"
-" - Make the column name at most 63 characters long."
-msgstr ""
-
 #: ckanext/validation/templates/scheming/form_snippets/validation_options.html:16
 msgid ""
 "You can pass a JSON object of validation options. See <a "
@@ -906,5 +861,46 @@ msgstr "Rapport de validation des données"
 #~ " - Remove any leading for trailing white space from the column name.\n"
 #~ " - Remove any double quotes('\"') from the column name.\n"
 #~ " - Make sure the column name is not blank."
+#~ msgstr ""
+
+# TODO: add in FR translation
+#~ msgid "Invalid Header for DataStore"
+#~ msgstr ""
+
+# TODO: add in FR translation
+#~ msgid ""
+#~ "Column name {value} in column "
+#~ "{column_number} is not valid for a "
+#~ "DataStore header"
+#~ msgstr ""
+
+# TODO: add in FR translation
+#~ msgid ""
+#~ "Column name is invalid for a DataStore header.\n"
+#~ "\n"
+#~ " How it could be resolved:\n"
+#~ " - Remove any leading underscores('_') from the column name.\n"
+#~ " - Remove any leading or trailing white space from the column name.\n"
+#~ " - Remove any double quotes('\"') from the column name.\n"
+#~ " - Make sure the column name is not blank."
+#~ msgstr ""
+
+# TODO: add in FR translation
+#~ msgid "Header Too Long for DataStore"
+#~ msgstr ""
+
+# TODO: add in FR translation
+#~ msgid ""
+#~ "Column name {value} in column "
+#~ "{column_number} is too long for a "
+#~ "DataStore header"
+#~ msgstr ""
+
+# TODO: add in FR translation
+#~ msgid ""
+#~ "Column name is too long for a DataStore header.\n"
+#~ "\n"
+#~ " How it could be resolved:\n"
+#~ " - Make the column name at most 63 characters long."
 #~ msgstr ""
 

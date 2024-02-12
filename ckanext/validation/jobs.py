@@ -3,11 +3,10 @@
 import logging
 import datetime
 import json
-from copy import copy
 
 import requests
 from sqlalchemy.orm.exc import NoResultFound
-from goodtables import validate, check, Error
+from goodtables import validate
 from goodtables.error import set_language
 
 from ckan.model import Session
@@ -15,7 +14,6 @@ from ckan.model import Session
 import ckantoolkit as t
 from ckan.plugins.toolkit import config
 from ckan.lib.uploader import get_resource_uploader
-from ckanext.datastore.helpers import is_valid_field_name
 
 from ckanext.validation.model import Validation
 
@@ -143,14 +141,12 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
     if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
         log.debug(u'Skipping checks: %r', options.get('skip_checks'))
+    if options.get('checks'):
+        log.debug(u'Using checks: %r', options.get('checks'))
     if options.get('dialect') and _format in options.get('dialect'):
         log.debug(u'Using Static Dialect for %s: %r', _format, options.get('dialect')[_format])
     if options.get('encoding'):
         log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
-
-    # (canada fork only): use custom check for DataStore headers
-    #                     need to keep in the default check TYPES: `structure` & `schema`
-    options['checks'] = ['structure', 'schema', 'ds-headers']
 
     for lang in langs.split():
         set_language(lang)
@@ -167,35 +163,3 @@ def _get_site_user_api_key():
     site_user = t.get_action('get_site_user')(
         {'ignore_auth': True}, {'id': site_user_name})
     return site_user['apikey']
-
-
-@check('ds-headers', type='custom', context='head')
-def ds_headers_check(cells, sample=None):
-    # type: (list[dict], list[dict]|None) -> list[Error|None]
-    """
-    Checks header values against the DataStore constraints
-
-    Canada Fork Only: TODO: upstream contribution??
-    """
-    errors = []
-    for cell in copy(cells):
-
-        # Skip if not header
-        if 'header' not in cell:
-            continue
-
-        errored = False
-
-        if not is_valid_field_name(cell['value']):
-            errors.append(Error('datastore-invalid-header', cell,
-                                message_substitutions={'value': cell['value'],}))
-            errored = True
-        if len(cell['value']) > 63:
-            errors.append(Error('datastore-header-too-long', cell,
-                                message_substitutions={'value': cell['value'],}))
-            errored = True
-
-        if errored:
-            cells.remove(cell)
-
-    return errors
