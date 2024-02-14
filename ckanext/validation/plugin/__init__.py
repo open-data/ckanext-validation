@@ -226,7 +226,11 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         needs_validation = False
         if ((
             # New file uploaded
-            updated_resource.get(u'upload') or
+            # (canada fork only): FieldStorage support / ckanapi support
+            # TODO: upstream contribution??
+            (updated_resource.get(u'upload') or
+             getattr(updated_resource.get(u'upload'), 'file', False)
+            ) or
             # External URL changed
             updated_resource.get(u'url') != current_resource.get(u'url') or
             # Schema changed
