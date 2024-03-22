@@ -150,6 +150,11 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
 
     for lang in langs.split():
         set_language(lang)
+        # TODO:
+        # if options.get('dialect') and _format in options.get('dialect'):
+        #   We want to pass ckanext.canada.tabulator.CanadaStream
+        #   with custom_parsers={'csv': ckanext.canada.tabulator.CanadaCSVParser}
+        #   We also want to pass options.get('encoding') to the Stream if it exists.
         reports[lang] = validate(source, format=_format, schema=schema, http_session=http_session, **options)
 
     log.debug(u'Validating source: %s', source)
