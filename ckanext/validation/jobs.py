@@ -13,14 +13,11 @@ from ckan.model import Session
 
 import ckantoolkit as t
 from ckan.plugins.toolkit import config
+from ckan.plugins import PluginImplementations
 from ckan.lib.uploader import get_resource_uploader
 
 from ckanext.validation.model import Validation
-
-try:
-    from ckanext.canada.tabulate import CanadaCSVParser as CSVParser
-except ImportError:
-    from tabulator.parsers.csv import CSVParser
+from ckanext.validation.interfaces import ITabulator
 
 
 log = logging.getLogger(__name__)
@@ -56,14 +53,6 @@ def run_validation_job(resource):
     if resource_options:
         options.update(resource_options)
 
-    # (canada fork only): add support for static validation options.
-    #                     these should NOT be saved in the resource_patch.
-    # TODO: upstream contribution??
-    static_options = t.config.get(
-        u'ckanext.validation.static_validation_options')
-    if static_options:
-        static_options = json.loads(static_options)
-
     # get url from uploader (canada fork only)
     #TODO: upstream contribution??
     upload = get_resource_uploader(resource)
@@ -80,13 +69,7 @@ def run_validation_job(resource):
 
     _format = resource[u'format'].lower()
 
-    # (canada fork only): add support for static validation options.
-    #                     do NOT set options=static_options to prevent it
-    #                     from being saved in the resource_patch.
-    if static_options:
-        reports = _validate_table(source, _format=_format, schema=schema, **static_options)
-    else:
-        reports = _validate_table(source, _format=_format, schema=schema, **options)
+    reports = _validate_table(source, _format=_format, schema=schema, **options)
 
     for report in reports.values():
         # Hide uploaded files
@@ -144,23 +127,33 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
 
     # (canada fork only): extra logging
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
-    if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
-        # log any skip checks in case they got into the request
-        log.debug(u'Skipping checks: %r', options.get('skip_checks'))
-    if options.get('checks'):
-        # log the checks for debugging purposes
-        log.debug(u'Using checks: %r', options.get('checks'))
-    if options.get('encoding'):
-        # log if using static encoding
-        log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
-    # (canada fork only): static dialect
-    if options.get('dialect') and _format in options.get('dialect'):
-        # subclassed Tabulator Stream will expect static_dialect
-        options['static_dialect'] = options.get('dialect')[_format]
-        # need to pass custom parser to use static dialect
-        options['custom_parsers'] = {'csv': CSVParser}
-        # pass log for subclass static dialect logging
-        options['logger'] = log
+
+    # (canada fork only): add support for static validation options.
+    #                     these should NOT be saved in the resource_patch.
+    # TODO: upstream contribution??
+    static_options = t.config.get(
+        u'ckanext.validation.static_validation_options')
+    if static_options:
+        static_options = json.loads(static_options)
+
+    # (canada fork only): use ITabulator implementation
+    # TODO: upstream contribution??
+    for plugin in PluginImplementations(ITabulator):
+        encoding = plugin.get_encoding()
+        if encoding:
+            options['encoding'] = encoding
+            log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
+
+        dialect = plugin.get_dialect(_format)
+        if dialect:
+            options['dialect'] = dialect
+
+        parsers = plugin.get_parsers()
+        if parsers:
+            options['custom_parsers'] = parsers
+
+    # (canada fork only): extra logging
+    options['logger'] = log
 
     for lang in langs.split():
         set_language(lang)
