@@ -17,6 +17,11 @@ from ckan.lib.uploader import get_resource_uploader
 
 from ckanext.validation.model import Validation
 
+try:
+    from ckanext.canada.tabulate import CanadaCSVParser as CSVParser
+except ImportError:
+    from tabulator.parsers.csv import CSVParser
+
 
 log = logging.getLogger(__name__)
 
@@ -137,24 +142,28 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     if not langs:
         langs = t.config.get('ckan.locale_default', 'en')
 
-    # extra logging (canada fork only)
+    # (canada fork only): extra logging
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
     if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
+        # log any skip checks in case they got into the request
         log.debug(u'Skipping checks: %r', options.get('skip_checks'))
     if options.get('checks'):
+        # log the checks for debugging purposes
         log.debug(u'Using checks: %r', options.get('checks'))
-    if options.get('dialect') and _format in options.get('dialect'):
-        log.debug(u'Using Static Dialect for %s: %r', _format, options.get('dialect')[_format])
     if options.get('encoding'):
+        # log if using static encoding
         log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
+    # (canada fork only): static dialect
+    if options.get('dialect') and _format in options.get('dialect'):
+        # subclassed Tabulator Stream will expect static_dialect
+        options['static_dialect'] = options.get('dialect')[_format]
+        # need to pass custom parser to use static dialect
+        options['custom_parsers'] = {'csv': CSVParser}
+        # pass log for subclass static dialect logging
+        options['logger'] = log
 
     for lang in langs.split():
         set_language(lang)
-        # TODO:
-        # if options.get('dialect') and _format in options.get('dialect'):
-        #   We want to pass ckanext.canada.tabulator.CanadaStream
-        #   with custom_parsers={'csv': ckanext.canada.tabulator.CanadaCSVParser}
-        #   We also want to pass options.get('encoding') to the Stream if it exists.
         reports[lang] = validate(source, format=_format, schema=schema, http_session=http_session, **options)
 
     log.debug(u'Validating source: %s', source)
