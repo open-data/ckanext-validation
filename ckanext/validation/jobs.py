@@ -53,6 +53,14 @@ def run_validation_job(resource):
     if resource_options:
         options.update(resource_options)
 
+    # (canada fork only): add support for static validation options.
+    #                     these should NOT be saved in the resource_patch.
+    # TODO: upstream contribution??
+    static_options = t.config.get(
+        u'ckanext.validation.static_validation_options')
+    if static_options:
+        static_options = json.loads(static_options)
+
     # get url from uploader (canada fork only)
     #TODO: upstream contribution??
     upload = get_resource_uploader(resource)
@@ -69,7 +77,13 @@ def run_validation_job(resource):
 
     _format = resource[u'format'].lower()
 
-    reports = _validate_table(source, _format=_format, schema=schema, **options)
+    # (canada fork only): add support for static validation options.
+    #                     do NOT set options=static_options to prevent it
+    #                     from being saved in the resource_patch.
+    if static_options:
+        reports = _validate_table(source, _format=_format, schema=schema, **static_options)
+    else:
+        reports = _validate_table(source, _format=_format, schema=schema, **options)
 
     for report in reports.values():
         # Hide uploaded files
@@ -127,14 +141,6 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
 
     # (canada fork only): extra logging
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
-
-    # (canada fork only): add support for static validation options.
-    #                     these should NOT be saved in the resource_patch.
-    # TODO: upstream contribution??
-    static_options = t.config.get(
-        u'ckanext.validation.static_validation_options')
-    if static_options:
-        static_options = json.loads(static_options)
 
     # (canada fork only): use ITabulator implementation
     # TODO: upstream contribution??

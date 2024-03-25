@@ -47,9 +47,9 @@ class IDataValidation(Interface):
 # TODO: upstream contrib??
 class ITabulator(Interface):
 
-    def get_dialect(self, format='csv'):
+    def get_dialect(self, format):
         """
-        Return a dict with a valid file dialect.
+        Return a dict or None with a valid file dialect.
 
         Use this if you want to specify dialects for a format.
 
@@ -64,7 +64,7 @@ class ITabulator(Interface):
           "lineterminator": "\r\n"
         }
         """
-        return {}
+        return None
 
     def get_stream_class(self):
         """
