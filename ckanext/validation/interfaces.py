@@ -1,5 +1,3 @@
-from tabulator import Stream
-
 from ckan.plugins.interfaces import Interface
 
 
@@ -41,57 +39,3 @@ class IDataValidation(Interface):
 
         '''
         return True
-
-
-# (canada fork only): interface for better Tabulator modifications
-# TODO: upstream contrib??
-class ITabulator(Interface):
-
-    def get_dialect(self, format):
-        """
-        Return a dict or None with a valid file dialect.
-
-        Use this if you want to specify dialects for a format.
-
-        e.g. for csv:
-        {
-          "delimiter" : ",",
-          "doublequote": True,
-          "escapechar": None,
-          "quotechar": "\"",
-          "quoting": 0,
-          "skipinitialspace": False,
-          "lineterminator": "\r\n"
-        }
-        """
-        return None
-
-    def get_stream_class(self):
-        """
-        Return a class of type Tabulator.Stream
-
-        Use this if you want to subclass the Tabulator Stream class.
-        """
-        return Stream
-
-    def get_parsers(self):
-        """
-        Return a dict of str,class for custom_parsers.
-
-        Use this if you want to add new parsers, or override existing ones.
-
-        e.g.
-        {"csv": tabulator.parsers.csv.CSVParser}
-        """
-        return None
-
-    def get_encoding(self):
-        """
-        Return a string to be used for specified encoding.
-
-        Use this if you want to force encoding.
-
-        e.g.
-        utf-8
-        """
-        return None

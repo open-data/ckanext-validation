@@ -17,7 +17,6 @@ from ckan.plugins import PluginImplementations
 from ckan.lib.uploader import get_resource_uploader
 
 from ckanext.validation.model import Validation
-from ckanext.validation.interfaces import ITabulator
 
 
 log = logging.getLogger(__name__)
@@ -141,25 +140,6 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
 
     # (canada fork only): extra logging
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
-
-    # (canada fork only): use ITabulator implementation
-    # TODO: upstream contribution??
-    for plugin in PluginImplementations(ITabulator):
-        encoding = plugin.get_encoding()
-        if encoding:
-            options['encoding'] = encoding
-            log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
-
-        dialect = plugin.get_dialect(_format)
-        if dialect:
-            options['dialect'] = dialect
-
-        parsers = plugin.get_parsers()
-        if parsers:
-            options['custom_parsers'] = parsers
-
-    # (canada fork only): extra logging
-    options['logger'] = log
 
     for lang in langs.split():
         set_language(lang)
