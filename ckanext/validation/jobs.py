@@ -140,6 +140,9 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
 
     # (canada fork only): extra logging
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
+    if options.get('checks'):
+        # log the checks for debugging purposes
+        log.debug(u'Using checks: %r', options.get('checks'))
 
     for lang in langs.split():
         set_language(lang)
