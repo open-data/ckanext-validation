@@ -8,7 +8,7 @@
           "checks": ["structure", "schema", "ds-headers"],
           "skip_checks": ["blank-row"]}
   ```
-- Uses `get_resource_uploader` to retrieve the resource data instead of the resource url, allowing for extensions like CloudStorage to work with Validation.
+- Uses `get_resource_uploader` to retrieve the resource data instead of the resource url, allowing extensions like CloudStorage to work with Validation.
 - Adds the capability to set dedicated worker queues per resource (queue name is the resource ID). This allows for separate control over the running of worker queues, allowing for custom services to run multiple resource queues at the same time:
   ```
   ckanext.xloader.use_designated_queues = True
