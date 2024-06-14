@@ -12,7 +12,7 @@ from goodtables.error import set_language
 from ckan.model import Session
 
 import ckantoolkit as t
-from ckan.plugins.toolkit import config
+from ckan.plugins import plugin_loaded
 from ckan.lib.uploader import get_resource_uploader
 
 from ckanext.validation.model import Validation
@@ -114,7 +114,7 @@ def run_validation_job(resource):
 
     # load successfully validated resources to datastore using xloader
     if validation.status == u'success':
-        if 'xloader' in config.get('ckan.plugins'):
+        if plugin_loaded('xloader'):
             t.get_action('xloader_submit')(
                 {'ignore_auth': True,
                  'user': t.get_action('get_site_user')({'ignore_auth': True})[
