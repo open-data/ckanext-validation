@@ -1,3 +1,19 @@
+# Validation - Canada Fork Changes
+
+- After running a successful Validation job, a job will be queued for Xloader to Load to DataStore.
+- Saves an English and French version of the validation reports to the resource.
+- Adds the capability for static validation schemas, ignoring any validation schema provided by the user. Example:
+  ```
+  ckanext.validation.static_validation_options = {"row_limit": 1000000,
+          "checks": ["structure", "schema", "ds-headers"],
+          "skip_checks": ["blank-row"]}
+  ```
+- Uses `get_resource_uploader` to retrieve the resource data instead of the resource url, allowing extensions like CloudStorage to work with Validation.
+- Adds the capability to set dedicated worker queues per resource (queue name is the resource ID). This allows for separate control over the running of worker queues, allowing for custom services to run multiple resource queues at the same time:
+  ```
+  ckanext.xloader.use_designated_queues = True
+  ```
+
 # ckanext-validation
 
 [![Build Status](https://travis-ci.org/frictionlessdata/ckanext-validation.svg?branch=master)](https://travis-ci.org/frictionlessdata/ckanext-validation)

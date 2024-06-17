@@ -9,6 +9,9 @@ from sqlalchemy.orm.exc import NoResultFound
 import ckan.plugins as plugins
 import ckan.lib.uploader as uploader
 
+# (canada fork only): capability to use designated queues per resource
+from ckan.lib.jobs import DEFAULT_QUEUE_NAME
+
 import ckantoolkit as t
 
 from ckanext.validation.model import Validation
@@ -131,7 +134,11 @@ def resource_validation_run(context, data_dict):
     Session.commit()
 
     if async_job:
-        enqueue_job(run_validation_job, [resource], title="Validate Resource")
+        # (canada fork only): capability to use designated queues per resource
+        queue = DEFAULT_QUEUE_NAME
+        if plugins.toolkit.asbool(plugins.toolkit.config.get('ckanext.validation.use_designated_queues')):
+            queue = resource['id']
+        enqueue_job(run_validation_job, [resource], title="Validate Resource", queue=queue)
     else:
         run_validation_job(resource)
 
