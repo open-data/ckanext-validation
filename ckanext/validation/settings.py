@@ -3,7 +3,7 @@
 from ckantoolkit import config
 
 # TODO: configurable
-DEFAULT_SUPPORTED_FORMATS = [u'csv', u'xls', u'xlsx']
+DEFAULT_SUPPORTED_FORMATS = [u'csv', u'xls', u'xlsx', 'CSV', 'XLS', 'XLSX']  # (canada fork only): uppercase for schema choices
 
 
 SUPPORTED_FORMATS = config.get(

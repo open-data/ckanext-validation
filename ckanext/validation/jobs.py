@@ -148,7 +148,11 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     if options.get('encoding'):
         log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
 
-    for lang in langs.split():
+    # (canada fork only): 2.10+ support
+    # TODO: upstream contrib??
+    if not isinstance(langs, list):
+        langs = [langs]
+    for lang in langs:
         set_language(lang)
         reports[lang] = validate(source, format=_format, schema=schema, http_session=http_session, **options)
 

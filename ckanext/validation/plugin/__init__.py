@@ -163,6 +163,11 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
     resources_to_validate = {}
 
+    def before_resource_create(self, context, data_dict):
+        # (canada fork only): 2.10+ support
+        # TODO: upstream contrib??
+        self.before_create(context, data_dict)
+
     def after_create(self, context, data_dict):
 
         is_dataset = self._data_dict_is_dataset(data_dict)
@@ -182,6 +187,11 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             if '__resource_create' in context:
                 del context['__resource_create']
             self._handle_validation_for_resource(context, data_dict)
+
+    def after_resource_create(self, context, data_dict):
+        # (canada fork only): 2.10+ support
+        # TODO: upstream contrib??
+        self.after_create(context, data_dict)
 
     def _data_dict_is_dataset(self, data_dict):
         return (
@@ -213,7 +223,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
             _run_async_validation(resource[u'id'])
 
-    def before_update(self, context, current_resource, updated_resource):
+    # (canada fork only): 2.10+ support
+    # TODO: upstream contrib??
+    def before_resource_update(self, context, current_resource, updated_resource):
         # (canada fork only): add key,value to be used in `after_update`
         # to prevent all resources from re-validating after a single update.
         # There is no `before_update` for packages, only in `resource_update`.
@@ -254,7 +266,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
         return updated_resource
 
-    def after_update(self, context, data_dict):
+    # (canada fork only): 2.10+ support
+    # TODO: upstream contrib??
+    def after_resource_update(self, context, data_dict):
 
         is_dataset = self._data_dict_is_dataset(data_dict)
 
