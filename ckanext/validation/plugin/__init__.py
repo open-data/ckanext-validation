@@ -168,7 +168,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         # TODO: upstream contrib??
         self.before_create(context, data_dict)
 
-    def after_create(self, context, data_dict):
+    # (canada fork only): 2.10+ support
+    # TODO: upstream contrib??
+    def after_dataset_create(self, context, data_dict):
 
         is_dataset = self._data_dict_is_dataset(data_dict)
 
@@ -191,7 +193,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
     def after_resource_create(self, context, data_dict):
         # (canada fork only): 2.10+ support
         # TODO: upstream contrib??
-        self.after_create(context, data_dict)
+        self.after_dataset_create(context, data_dict)
 
     def _data_dict_is_dataset(self, data_dict):
         return (
@@ -339,7 +341,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
                 p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[resource_id],
                                       title="Remove Validation Reports for Unsupported Format or Type")
 
-    def before_delete(self, context, resource, resources):
+    # (canada fork only): 2.10+ support
+    # TODO: upstream contrib??
+    def before_resource_delete(self, context, resource, resources):
         # (canada fork only): add key,value to be used in `after_update`
         # to prevent all resources from re-validating after a single deletion.
         # TODO: remove after upstream fix to IResourceController hooks
@@ -353,7 +357,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
     # IPackageController
 
-    def before_index(self, index_dict):
+    # (canada fork only): 2.10+ support
+    # TODO: upstream contrib??
+    def before_dataset_index(self, index_dict):
 
         res_status = []
         dataset_dict = json.loads(index_dict['validated_data_dict'])
