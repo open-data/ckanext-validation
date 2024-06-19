@@ -13,6 +13,7 @@ from ckan.model import Session
 
 import ckantoolkit as t
 from ckan.plugins.toolkit import config
+from ckan.plugins import PluginImplementations
 from ckan.lib.uploader import get_resource_uploader
 
 from ckanext.validation.model import Validation
@@ -137,16 +138,11 @@ def _validate_table(source, _format=u'csv', schema=None, **options):
     if not langs:
         langs = t.config.get('ckan.locale_default', 'en')
 
-    # extra logging (canada fork only)
+    # (canada fork only): extra logging
     log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
-    if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
-        log.debug(u'Skipping checks: %r', options.get('skip_checks'))
     if options.get('checks'):
+        # log the checks for debugging purposes
         log.debug(u'Using checks: %r', options.get('checks'))
-    if options.get('dialect') and _format in options.get('dialect'):
-        log.debug(u'Using Static Dialect for %s: %r', _format, options.get('dialect')[_format])
-    if options.get('encoding'):
-        log.debug(u'Using Static Encoding for %s: %s', _format, options.get('encoding'))
 
     for lang in langs.split():
         set_language(lang)
