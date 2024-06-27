@@ -3,6 +3,7 @@
 import logging
 import datetime
 import json
+import re
 
 import requests
 from sqlalchemy.orm.exc import NoResultFound
@@ -102,9 +103,17 @@ def run_validation_job(resource):
             report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
     if 'valid' in report:
         validation.status = 'success' if report['valid'] else 'failure'
-        validation.report = json.dumps(report)
+        #FIXME: report vs dict
+        if isinstance(report, dict):
+            validation.report = json.dumps(report)
+        else:
+            validation.report = json.dump(report.to_json())
     else:
-        validation.report = json.dumps(report)
+        #FIXME: report vs dict
+        if isinstance(report, dict):
+            validation.report = json.dumps(report)
+        else:
+            validation.report = json.dump(report.to_json())
         if 'errors' in report and report['errors']:
             validation.status = 'error'
             validation.error = {
@@ -163,7 +172,8 @@ def _validate_table(source, _format='csv', schema=None, **options):
         langs = t.config.get('ckan.locale_default', 'en')
 
     # (canada fork only): extra logging
-    log.debug(u'Validating up to %s rows', options.get('row_limit', 1000))
+    #FIXME: figure out max rows / min rows... table-dimensions check???
+    log.debug(u'Validating up to %s rows', options.get('max_rows', 1000))
     if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
         log.debug(u'Skipping checks: %r', options.get('skip_checks'))
     if options.get('checks'):
