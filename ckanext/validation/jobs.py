@@ -183,7 +183,11 @@ def _validate_table(source, _format='csv', schema=None, **options):
 
     # Load the Resource Dialect as described in https://framework.frictionlessdata.io/docs/framework/dialect.html
     if 'dialect' in options:
-        dialect = Dialect.from_descriptor(options['dialect'])
+        # (canada fork only): support static validation dialect options
+        if _format in options.get('dialect'):
+            dialect = Dialect.from_descriptor(options.get('dialect')[_format])
+        else:
+            dialect = Dialect.from_descriptor(options['dialect'])
         options['dialect'] = dialect
 
     # Load the list of checks and its parameters declaratively as in https://framework.frictionlessdata.io/docs/checks/table.html
