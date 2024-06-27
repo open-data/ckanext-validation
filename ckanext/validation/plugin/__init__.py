@@ -43,6 +43,10 @@ from ckanext.validation import blueprints, cli
 ALLOWED_UPLOAD_TYPES = (cgi.FieldStorage, FlaskFileStorage)
 log = logging.getLogger(__name__)
 
+# (canada fork only): i18n support
+import os
+I18N_DIR = os.path.join(os.path.dirname(__file__), "../i18n")
+
 
 class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IConfigurer)
