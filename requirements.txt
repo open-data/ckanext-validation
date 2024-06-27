@@ -1,5 +1,7 @@
 ckantoolkit>=0.0.3
-# we use a custom goodtables fork (canada fork only)
-#goodtables==1.5.1
-# servers cannot call to github (canada fork only)
+# (canada fork only): we use a custom frictionless-py fork
+#frictionless==5.0.0b9
+markupsafe==2.0.1
+tableschema
+# (canada fork only): servers cannot call to github
 #-e git+https://github.com/ckan/ckanext-scheming.git#egg=ckanext-scheming

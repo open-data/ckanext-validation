@@ -1,11 +1,14 @@
-import __builtin__ as builtins
+import builtins
 import cgi
 import functools
-import mock
+from unittest import mock
+from io import BytesIO
 
+from werkzeug.datastructures import FileStorage
 from pyfakefs import fake_filesystem
 
 import ckan.lib.uploader
+from ckan.plugins import toolkit
 from ckan.tests.helpers import change_config
 
 
@@ -92,7 +95,7 @@ ERROR_REPORT = {
 VALID_REPORT_LOCAL_FILE = {
     'error-count': 0,
     'table-count': 1,
-    'tables': [
+    'tasks': [
         {
             'error-count': 0,
             'errors': [],
@@ -103,7 +106,7 @@ VALID_REPORT_LOCAL_FILE = {
                 'other'
             ],
             'row-count': 79,
-            'source': '/data/resources/31f/d4c/1e-9c82-424b-b78b-48cd08db6e64',
+            'place': '/data/resources/31f/d4c/1e-9c82-424b-b78b-48cd08db6e64',
             'time': 0.007,
             'valid': True
         }
@@ -127,7 +130,7 @@ def _mock_open_if_open_fails(*args, **kwargs):
         return _mock_file_open(*args, **kwargs)
 
 
-def mock_uploads(func):
+def mock_uploads_fake_fs(func):
     @change_config('ckan.storage_path', '/doesnt_exist')
     @mock.patch.object(ckan.lib.uploader, 'os', _mock_os)
     @mock.patch.object(builtins, 'open',
@@ -140,11 +143,11 @@ def mock_uploads(func):
     return wrapper
 
 
-class MockFieldStorage(cgi.FieldStorage):
+class MockFieldStorage(FileStorage):
+    pass
 
-    def __init__(self, fp, filename):
+def get_mock_file(contents):
+    mock_file = BytesIO()
+    mock_file.write(contents.encode('utf8'))
 
-        self.file = fp
-        self.filename = filename
-        self.name = 'upload'
-        self.list = None
+    return mock_file

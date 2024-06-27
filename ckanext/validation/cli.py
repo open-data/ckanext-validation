@@ -4,24 +4,18 @@ import click
 from ckanext.validation.model import create_tables, tables_exist
 
 
-def get_commands():
-    return [validation]
-
-
 @click.group()
 def validation():
-    """Validation management commands.
-    """
+    """Harvests remotely mastered metadata."""
     pass
 
 
 @validation.command()
 def init_db():
-    """Reinitalize database tables."""
+    """Creates the necessary tables in the database."""
     if tables_exist():
-        click.echo("Validation tables already exist")
+        print(u"Validation tables already exist")
         sys.exit(0)
 
     create_tables()
-
-    click.echo("Validation tables created")
+    print(u"Validation tables created")

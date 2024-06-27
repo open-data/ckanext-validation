@@ -1,27 +1,38 @@
 import json
 import io
-import mock
+from unittest import mock
 import datetime
 
-from nose.tools import assert_in, assert_equals
+import pytest
 
+import ckantoolkit as t
 from ckantoolkit.tests.factories import Sysadmin, Dataset
 from ckantoolkit.tests.helpers import (
-    FunctionalTestBase, submit_and_follow, webtest_submit, call_action,
-    reset_db
+    call_action, _get_test_app
 )
 
-from ckanext.validation.model import create_tables, tables_exist
-from ckanext.validation.tests.helpers import (
-    VALID_CSV, INVALID_CSV, mock_uploads
-)
+from ckanext.validation.tests.helpers import VALID_CSV, INVALID_CSV
+
+
+def _new_resource_url(dataset_id):
+
+    url = "/dataset/{}/resource/new".format(dataset_id)
+
+    return url
+
+
+def _edit_resource_url(dataset_id, resource_id):
+
+    url = "/dataset/{}/resource/{}/edit".format(dataset_id, resource_id)
+
+    return url
 
 
 def _get_resource_new_page_as_sysadmin(app, id):
     user = Sysadmin()
-    env = {'REMOTE_USER': user['name'].encode('ascii')}
+    env = {"REMOTE_USER": user["name"].encode("ascii")}
     response = app.get(
-        url='/dataset/new_resource/{}'.format(id),
+        url="/dataset/new_resource/{}".format(id),
         extra_environ=env,
     )
     return env, response
@@ -29,516 +40,459 @@ def _get_resource_new_page_as_sysadmin(app, id):
 
 def _get_resource_update_page_as_sysadmin(app, id, resource_id):
     user = Sysadmin()
-    env = {'REMOTE_USER': user['name'].encode('ascii')}
+    env = {"REMOTE_USER": user["name"].encode("ascii")}
     response = app.get(
-        url='/dataset/{}/resource_edit/{}'.format(id, resource_id),
+        url="/dataset/{}/resource_edit/{}".format(id, resource_id),
         extra_environ=env,
     )
     return env, response
 
 
-class TestResourceSchemaForm(FunctionalTestBase):
+@pytest.mark.usefixtures("clean_db", "validation_setup", "with_plugins")
+class TestResourceSchemaForm(object):
+    def test_resource_form_includes_json_fields(self, app):
+        dataset = Dataset()
+        env, response = _get_resource_new_page_as_sysadmin(app, dataset["id"])
+        assert '<input type="hidden" id="field-schema" name="schema"' in response.body
+        assert '<input id="field-schema-url" type="url" name="schema_url"' in response.body
+        assert '<textarea id="field-schema-json" name="schema_json"' in response.body
 
-    def setup(self):
-        reset_db()
-        if not tables_exist():
-            create_tables()
-
-    def test_resource_form_includes_json_fields(self):
+    def test_resource_form_create(self, app):
         dataset = Dataset()
 
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
-        assert_in('schema', form.fields)
-        assert_equals(form.fields['schema'][0].tag, 'input')
-        assert_equals(form.fields['schema_json'][0].tag, 'textarea')
-        assert_equals(form.fields['schema_url'][0].tag, 'input')
-
-    def test_resource_form_create(self):
-        dataset = Dataset()
-
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
-
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
-        }
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
         json_value = json.dumps(value)
 
-        form['url'] = 'https://example.com/data.csv'
-        form['schema'] = json_value
+        data = {
+            "url": "https://example.com/data.csv",
+            "schema": json_value,
+            "id": "",
+            "save": "",
+        }
 
-        submit_and_follow(app, form, env, 'save')
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+        app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
 
-        dataset = call_action('package_show', id=dataset['id'])
+        dataset = call_action("package_show", id=dataset["id"])
 
-        assert_equals(dataset['resources'][0]['schema'], value)
+        assert dataset["resources"][0]["schema"] == value
 
-    def test_resource_form_create_json(self):
+    def test_resource_form_create_json(self, app):
         dataset = Dataset()
 
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
-
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
-        }
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
         json_value = json.dumps(value)
 
-        form['url'] = 'https://example.com/data.csv'
-        form['schema_json'] = json_value
+        data = {
+            "url": "https://example.com/data.csv",
+            "schema_json": json_value,
+            "id": "",
+            "save": "",
+        }
 
-        submit_and_follow(app, form, env, 'save')
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+        app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
 
-        dataset = call_action('package_show', id=dataset['id'])
+        dataset = call_action("package_show", id=dataset["id"])
 
-        assert_equals(dataset['resources'][0]['schema'], value)
+        assert dataset["resources"][0]["schema"] == value
 
-    @mock_uploads
-    def test_resource_form_create_upload(self, mock_open):
+    def test_resource_form_create_upload(self, app):
         dataset = Dataset()
 
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
+        json_value = bytes(json.dumps(value).encode('utf8'))
 
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
+        data = {
+            "url": "https://example.com/data.csv",
+            "id": "",
+            "save": "",
+            "schema_upload": (io.BytesIO(json_value), "schema.json"),
         }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["schema"] == value
+
+    def test_resource_form_create_url(self, app):
+        dataset = Dataset()
+
+        value = "https://example.com/schemas.json"
+        data = {
+            "url": "https://example.com/data.csv",
+            "schema_url": value,
+            "id": "",
+            "save": "",
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["schema"] == value
+
+    def test_resource_form_update(self, app):
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
+        dataset = Dataset(
+            resources=[{"url": "https://example.com/data.csv", "schema": value}]
+        )
+
+        value = {"fields": [{"name": "code"}, {"name": "department"}, {"name": "date"}]}
+
         json_value = json.dumps(value)
+
+        data = {
+            "url": "https://example.com/data.csv",
+            # Clear current value
+            "schema_json": "",
+            "schema": json_value,
+            "id": "",
+            "save": "",
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["schema"] == value
+
+    def test_resource_form_update_json(self, app):
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
+        dataset = Dataset(
+            resources=[{"url": "https://example.com/data.csv", "schema": value}]
+        )
+
+        value = {"fields": [{"name": "code"}, {"name": "department"}, {"name": "date"}]}
+
+        json_value = json.dumps(value)
+        data = {
+            "url": "https://example.com/data.csv",
+            "schema_json": json_value,
+            "id": "",
+            "save": "",
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["schema"] == value
+
+    def test_resource_form_update_url(self, app):
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
+        dataset = Dataset(
+            resources=[{"url": "https://example.com/data.csv", "schema": value}]
+        )
+
+        value = "https://example.com/schema.json"
+
+        data = {
+            "url": "https://example.com/data.csv",
+            "schema_url": value,
+            "id": "",
+            "save": "",
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["schema"] == value
+
+    def test_resource_form_update_upload(self, app):
+        value = {"fields": [{"name": "code"}, {"name": "department"}]}
+        dataset = Dataset(
+            resources=[{"url": "https://example.com/data.csv", "schema": value}]
+        )
+
+        value = {"fields": [{"name": "code"}, {"name": "department"}, {"name": "date"}]}
+        json_value = bytes(json.dumps(value).encode('utf8'))
 
         upload = ('schema_upload', 'schema.json', json_value)
-        form['url'] = 'https://example.com/data.csv'
 
-        webtest_submit(
-                form, 'save', upload_files=[upload], extra_environ=env)
+        data = {
+            "url": "https://example.com/data.csv",
+            "id": "",
+            "save": "",
+            "schema_upload": (io.BytesIO(json_value), "schema.json"),
+        }
 
-        dataset = call_action('package_show', id=dataset['id'])
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+        app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
 
-        assert_equals(dataset['resources'][0]['schema'], value)
+        dataset = call_action("package_show", id=dataset["id"])
 
-    def test_resource_form_create_url(self):
+        assert dataset["resources"][0]["schema"] == value
+
+
+@pytest.mark.usefixtures("clean_db", "validation_setup")
+class TestResourceValidationOptionsForm(object):
+    def test_resource_form_includes_json_fields(self, app):
         dataset = Dataset()
 
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
+        env, response = _get_resource_new_page_as_sysadmin(app, dataset["id"])
+        assert '<textarea id="field-validation_options" name="validation_options"' in response.body
 
-        value = 'https://example.com/schemas.json'
-
-        form['url'] = 'https://example.com/data.csv'
-        form['schema_json'] = value
-
-        submit_and_follow(app, form, env, 'save')
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['schema'], value)
-
-    def test_resource_form_update(self):
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
-        }
-        dataset = Dataset(
-            resources=[{
-                'url': 'https://example.com/data.csv',
-                'schema': value
-            }]
-        )
-
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        assert_equals(
-            form['schema'].value, json.dumps(value, indent=None))
-
-        # Clear current value
-        form['schema_json'] = ''
-
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'},
-                {'name': 'date'}
-            ]
-        }
-
-        json_value = json.dumps(value)
-
-        form['schema'] = json_value
-
-        submit_and_follow(app, form, env, 'save')
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['schema'], value)
-
-    def test_resource_form_update_json(self):
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
-        }
-        dataset = Dataset(
-            resources=[{
-                'url': 'https://example.com/data.csv',
-                'schema': value
-            }]
-        )
-
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        assert_equals(
-            form['schema_json'].value, json.dumps(value, indent=2))
-
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'},
-                {'name': 'date'}
-            ]
-        }
-
-        json_value = json.dumps(value)
-
-        form['schema_json'] = json_value
-
-        submit_and_follow(app, form, env, 'save')
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['schema'], value)
-
-    def test_resource_form_update_url(self):
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
-        }
-        dataset = Dataset(
-            resources=[{
-                'url': 'https://example.com/data.csv',
-                'schema': value
-            }]
-        )
-
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        assert_equals(
-            form['schema_json'].value, json.dumps(value, indent=2))
-
-        value = 'https://example.com/schema.json'
-
-        form['schema_url'] = value
-
-        submit_and_follow(app, form, env, 'save')
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['schema'], value)
-
-    def test_resource_form_update_upload(self):
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'}
-            ]
-        }
-        dataset = Dataset(
-            resources=[{
-                'url': 'https://example.com/data.csv',
-                'schema': value
-            }]
-        )
-
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        assert_equals(
-            form['schema_json'].value, json.dumps(value, indent=2))
-
-        value = {
-            'fields': [
-                {'name': 'code'},
-                {'name': 'department'},
-                {'name': 'date'}
-            ]
-        }
-
-        json_value = json.dumps(value)
-
-        upload = ('schema_upload', 'schema.json', json_value)
-        form['url'] = 'https://example.com/data.csv'
-
-        webtest_submit(
-                form, 'save', upload_files=[upload], extra_environ=env)
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['schema'], value)
-
-
-class TestResourceValidationOptionsForm(FunctionalTestBase):
-
-    def setup(self):
-        reset_db()
-        if not tables_exist():
-            create_tables()
-
-    def test_resource_form_includes_json_fields(self):
+    def test_resource_form_create(self, app):
         dataset = Dataset()
 
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
-        assert_in('validation_options', form.fields)
-        assert_equals(form.fields['validation_options'][0].tag, 'textarea')
-
-    def test_resource_form_create(self):
-        dataset = Dataset()
-
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
-
         value = {
-            'delimiter': ';',
-            'headers': 2,
-            'skip_rows': ['#'],
+            "delimiter": ";",
+            "headers": 2,
+            "skip_rows": ["#"],
         }
         json_value = json.dumps(value)
+        data = {
+            "url": "https://example.com/data.csv",
+            "validation_options": json_value,
+            "id": "",
+            "save": "",
+        }
 
-        form['url'] = 'https://example.com/data.csv'
-        form['validation_options'] = json_value
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
 
-        submit_and_follow(app, form, env, 'save')
+        app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
 
-        dataset = call_action('package_show', id=dataset['id'])
+        dataset = call_action("package_show", id=dataset["id"])
 
-        assert_equals(dataset['resources'][0]['validation_options'], value)
+        assert dataset["resources"][0]["validation_options"] == value
 
-    def test_resource_form_update(self):
+    def test_resource_form_update(self, app):
         value = {
-            'delimiter': ';',
-            'headers': 2,
-            'skip_rows': ['#'],
+            "delimiter": ";",
+            "headers": 2,
+            "skip_rows": ["#"],
         }
 
         dataset = Dataset(
-            resources=[{
-                'url': 'https://example.com/data.csv',
-                'validation_options': value
-            }]
+            resources=[
+                {"url": "https://example.com/data.csv", "validation_options": value}
+            ]
         )
 
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        assert_equals(
-            form['validation_options'].value, json.dumps(
-                value, indent=2, sort_keys=True))
-
         value = {
-            'delimiter': ';',
-            'headers': 2,
-            'skip_rows': ['#'],
-            'skip_tests': ['blank-rows'],
+            "delimiter": ";",
+            "headers": 2,
+            "skip_rows": ["#"],
+            "skip_tests": ["blank-rows"],
         }
 
         json_value = json.dumps(value)
+        data = {
+            "url": "https://example.com/data.csv",
+            "validation_options": json_value,
+            "id": "",
+            "save": "",
+        }
 
-        form['url'] = 'https://example.com/data.csv'
-        form['validation_options'] = json_value
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
 
-        submit_and_follow(app, form, env, 'save')
+        app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
 
-        dataset = call_action('package_show', id=dataset['id'])
+        dataset = call_action("package_show", id=dataset["id"])
 
-        assert_equals(dataset['resources'][0]['validation_options'], value)
+        assert dataset["resources"][0]["validation_options"] == value
 
 
-class TestResourceValidationOnCreateForm(FunctionalTestBase):
+@pytest.mark.usefixtures("clean_db", "validation_setup", "mock_uploads")
+@pytest.mark.ckan_config("ckanext.validation.run_on_create_sync", True)
+class TestResourceValidationOnCreateForm(object):
+
+    def test_resource_form_create_valid(self, app):
+
+        dataset = Dataset()
+
+        data = {
+            "url": "https://example.com/data.csv",
+            "id": "",
+            "save": "",
+            "upload": (io.BytesIO(bytes(VALID_CSV.encode("utf8"))), "valid.csv"),
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["validation_status"] == "success"
+        assert "validation_timestamp" in dataset["resources"][0]
+
+    def test_resource_form_create_invalid(self, app):
+        dataset = Dataset()
+
+        data = {
+            "url": "https://example.com/data.csv",
+            "id": "",
+            "save": "",
+            "upload": (io.BytesIO(bytes(INVALID_CSV.encode("utf8"))), "invalid.csv"),
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        response = app.post(
+            url=_new_resource_url(dataset['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        assert "validation" in response.body
+        assert "missing-cell" in response.body
+        assert 'Row at position \\&#34;2\\&#34; has a missing cell in field \\&#34;d\\&#34; at position \\&#34;4\\&#34;' in response.body
+        assert "This row has less values compared to the header row" in response.body
+
+
+@pytest.mark.usefixtures("clean_db", "validation_setup", "mock_uploads")
+@pytest.mark.ckan_config("ckanext.validation.run_on_update_sync", True)
+class TestResourceValidationOnUpdateForm(object):
+
+    def test_resource_form_update_valid(self, app):
+
+        dataset = Dataset(resources=[{"url": "https://example.com/data.csv"}])
+        data = {
+            "url": "https://example.com/data.csv",
+            "id": "",
+            "save": "",
+            "upload": (io.BytesIO(bytes(VALID_CSV.encode("utf8"))), "valid.csv"),
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
+        dataset = call_action("package_show", id=dataset["id"])
+
+        assert dataset["resources"][0]["validation_status"] == "success"
+        assert "validation_timestamp" in dataset["resources"][0]
+
+    def test_resource_form_update_invalid(self, app):
+
+        dataset = Dataset(resources=[{"url": "https://example.com/data.csv"}])
+
+        data = {
+            "url": "https://example.com/data.csv",
+            "id": "",
+            "save": "",
+            "upload": (io.BytesIO(bytes(INVALID_CSV.encode("utf8"))), "invalid.csv"),
+        }
+
+        user = Sysadmin()
+        env = {"REMOTE_USER": user["name"].encode("ascii")}
+
+        dataset2 = call_action("package_show", id=dataset["id"])
+        response = app.post(
+            url=_edit_resource_url(dataset['id'], dataset['resources'][0]['id']),
+            extra_environ=env,
+            data=data
+        )
+
+        assert "validation" in response.body
+        assert "missing-cell" in response.body
+        assert "This row has less values compared to the header row" in response.body
+
+
+@pytest.mark.usefixtures("clean_db", "validation_setup")
+class TestResourceValidationFieldsPersisted(object):
+    @classmethod
+    def setup_class(cls):
+        # Needed to apply the config changes at the right time so they can be picked up
+        # during startup
+        cls._original_config = dict(t.config)
+        t.config["ckanext.validation.run_on_update_sync"] = False
 
     @classmethod
-    def _apply_config_changes(cls, cfg):
-        cfg['ckanext.validation.run_on_create_sync'] = True
+    def teardown_class(cls):
 
-    def setup(self):
-        reset_db()
-        if not tables_exist():
-            create_tables()
+        t.config.clear()
+        t.config.update(cls._original_config)
 
-    @mock_uploads
-    def test_resource_form_create_valid(self, mock_open):
-        dataset = Dataset()
+    def test_resource_form_fields_are_persisted(self, app):
 
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
+        dataset = Dataset(
+            resources=[
+                {
+                    "url": "https://example.com/data.csv",
+                    "validation_status": "success",
+                    "validation_timestamp": datetime.datetime.now().isoformat(),
+                }
+            ]
+        )
 
-        upload = ('upload', 'valid.csv', VALID_CSV)
-
-        valid_stream = io.BufferedReader(io.BytesIO(VALID_CSV))
-
-        with mock.patch('io.open', return_value=valid_stream):
-
-            submit_and_follow(app, form, env, 'save', upload_files=[upload])
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['validation_status'], 'success')
-        assert 'validation_timestamp' in dataset['resources'][0]
-
-    @mock_uploads
-    def test_resource_form_create_invalid(self, mock_open):
-        dataset = Dataset()
-
-        app = self._get_test_app()
-        env, response = _get_resource_new_page_as_sysadmin(app, dataset['id'])
-        form = response.forms['resource-edit']
-
-        upload = ('upload', 'invalid.csv', INVALID_CSV)
-
-        invalid_stream = io.BufferedReader(io.BytesIO(INVALID_CSV))
-
-        with mock.patch('io.open', return_value=invalid_stream):
-
-            response = webtest_submit(
-                form, 'save', upload_files=[upload], extra_environ=env)
-
-        assert_in('validation', response.body)
-        assert_in('missing-value', response.body)
-        assert_in('Row 2 has a missing value in column 4', response.body)
-
-
-class TestResourceValidationOnUpdateForm(FunctionalTestBase):
-
-    @classmethod
-    def _apply_config_changes(cls, cfg):
-        cfg['ckanext.validation.run_on_update_sync'] = True
-
-    def setup(self):
-        reset_db()
-        if not tables_exist():
-            create_tables()
-
-    @mock_uploads
-    def test_resource_form_update_valid(self, mock_open):
-
-        dataset = Dataset(resources=[
-            {
-                'url': 'https://example.com/data.csv'
-            }
-        ])
-
-        app = self._get_test_app()
         env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
+            app, dataset["id"], dataset["resources"][0]["id"]
+        )
 
-        upload = ('upload', 'valid.csv', VALID_CSV)
-
-        valid_stream = io.BufferedReader(io.BytesIO(VALID_CSV))
-
-        with mock.patch('io.open', return_value=valid_stream):
-
-            submit_and_follow(app, form, env, 'save', upload_files=[upload])
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['validation_status'], 'success')
-        assert 'validation_timestamp' in dataset['resources'][0]
-
-    @mock_uploads
-    def test_resource_form_update_invalid(self, mock_open):
-
-        dataset = Dataset(resources=[
-            {
-                'url': 'https://example.com/data.csv'
-            }
-        ])
-
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        upload = ('upload', 'invalid.csv', INVALID_CSV)
-
-        invalid_stream = io.BufferedReader(io.BytesIO(INVALID_CSV))
-
-        with mock.patch('io.open', return_value=invalid_stream):
-
-            response = webtest_submit(
-                form, 'save', upload_files=[upload], extra_environ=env)
-
-        assert_in('validation', response.body)
-        assert_in('missing-value', response.body)
-        assert_in('Row 2 has a missing value in column 4', response.body)
-
-
-class TestResourceValidationFieldsPersisted(FunctionalTestBase):
-
-    @classmethod
-    def _apply_config_changes(cls, cfg):
-        cfg['ckanext.validation.run_on_update_sync'] = False
-        cfg['ckanext.validation.run_on_update_sync'] = False
-
-    def setup(self):
-        reset_db()
-        if not tables_exist():
-            create_tables()
-
-    def test_resource_form_fields_are_persisted(self):
-
-        dataset = Dataset(resources=[
-            {
-                'url': 'https://example.com/data.csv',
-                'validation_status': 'success',
-                'validation_timestamp': datetime.datetime.now().isoformat()
-            }
-        ])
-
-        app = self._get_test_app()
-        env, response = _get_resource_update_page_as_sysadmin(
-            app, dataset['id'], dataset['resources'][0]['id'])
-        form = response.forms['resource-edit']
-
-        form['description'] = 'test desc'
-
-        submit_and_follow(app, form, env, 'save')
-
-        dataset = call_action('package_show', id=dataset['id'])
-
-        assert_equals(dataset['resources'][0]['validation_status'], 'success')
-        assert 'validation_timestamp' in dataset['resources'][0]
-        assert_equals(dataset['resources'][0]['description'], 'test desc')
+        assert '<input type="hidden" name="validation_status" value="success"' in response.body
+        assert '<input type="hidden" name="validation_timestamp"' in response.body

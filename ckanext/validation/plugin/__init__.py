@@ -1,12 +1,14 @@
 # encoding: utf-8
-import os
 import logging
 import cgi
 import json
 
+from werkzeug.datastructures import FileStorage as FlaskFileStorage
 import ckan.plugins as p
+# (canada fork only): i18n support
 from ckan.lib.plugins import DefaultTranslation
-import ckan.plugins.toolkit as toolkit
+# (canada fork only): ckantoolkit -> toolkit
+import ckan.plugins.toolkit as t
 
 from ckanext.validation import settings
 from ckanext.validation.model import tables_exist
@@ -23,7 +25,7 @@ from ckanext.validation.helpers import (
     validation_extract_report_from_errors,
     dump_json_value,
     bootstrap_version,
-    validation_status,
+    validation_dict,
     use_webassets,
 )
 from ckanext.validation.validators import (
@@ -35,23 +37,14 @@ from ckanext.validation.utils import (
     get_update_mode_from_config,
 )
 from ckanext.validation.interfaces import IDataValidation
+from ckanext.validation import blueprints, cli
 
 
+ALLOWED_UPLOAD_TYPES = (cgi.FieldStorage, FlaskFileStorage)
 log = logging.getLogger(__name__)
 
 
-if toolkit.check_ckan_version(u'2.9'):
-    from ckanext.validation.plugin.flask_plugin import MixinPlugin
-    ckan_29_or_higher = True
-else:
-    from ckanext.validation.plugin.pylons_plugin import MixinPlugin
-    ckan_29_or_higher = False
-
-
-HERE = os.path.abspath(os.path.dirname(__file__))
-I18N_DIR = os.path.join(HERE, u"../i18n")
-
-class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
+class ValidationPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IConfigurer)
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
@@ -59,6 +52,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IPackageController, inherit=True)
     p.implements(p.ITemplateHelpers)
     p.implements(p.IValidators)
+    p.implements(p.IBlueprint)
+    p.implements(p.IClick)
+    # (canada fork only): i18n support
     p.implements(p.ITranslation, inherit=True)
 
     # ITranslation
@@ -66,21 +62,31 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
     def i18n_directory(self):
         return I18N_DIR
 
+    # IBlueprint
+
+    def get_blueprint(self):
+        return [blueprints.validation]
+
+    # IClick
+
+    def get_commands(self):
+        return [cli.validation]
+
     # IConfigurer
 
     def update_config(self, config_):
-#        if not tables_exist():
-#            log.critical(u'''
-#The validation extension requires a database setup. Please run the following
-#to create the database tables:
-#    paster --plugin=ckanext-validation validation init-db
-#''')
-#        else:
-#            log.debug(u'Validation tables exist')
+        if not tables_exist():
+            log.critical(u'''
+The validation extension requires a database setup. Please run the following
+to create the database tables:
+    paster --plugin=ckanext-validation validation init-db
+''')
+        else:
+            log.debug(u'Validation tables exist')
 
-        toolkit.add_template_directory(config_, u'../templates')
-        toolkit.add_public_directory(config_, u'../public')
-        toolkit.add_resource(u'../webassets', 'ckanext-validation')
+        t.add_template_directory(config_, u'../templates')
+        t.add_public_directory(config_, u'../public')
+        t.add_resource(u'../webassets', 'ckanext-validation')
 
     # IActions
 
@@ -90,12 +96,9 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             u'resource_validation_show': resource_validation_show,
             u'resource_validation_delete': resource_validation_delete,
             u'resource_validation_run_batch': resource_validation_run_batch,
+            u'resource_create': custom_resource_create,
+            u'resource_update': custom_resource_update,
         }
-
-        if get_create_mode_from_config() == u'sync':
-            new_actions[u'resource_create'] = custom_resource_create
-        if get_update_mode_from_config() == u'sync':
-            new_actions[u'resource_update'] = custom_resource_update
 
         return new_actions
 
@@ -117,11 +120,14 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             u'validation_extract_report_from_errors': validation_extract_report_from_errors,
             u'dump_json_value': dump_json_value,
             u'bootstrap_version': bootstrap_version,
-            u'validation_status': validation_status,
+            u'validation_dict': validation_dict,
             u'use_webassets': use_webassets,
         }
 
     # IResourceController
+
+    resources_to_validate = {}
+    packages_to_skip = {}
 
     def _process_schema_fields(self, data_dict):
         u'''
@@ -140,13 +146,16 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
         schema_upload = data_dict.pop(u'schema_upload', None)
         schema_url = data_dict.pop(u'schema_url', None)
         schema_json = data_dict.pop(u'schema_json', None)
-
-        if isinstance(schema_upload, cgi.FieldStorage):
-            data_dict[u'schema'] = schema_upload.file.read()
+        if isinstance(schema_upload, ALLOWED_UPLOAD_TYPES):
+            uploaded_file = _get_underlying_file(schema_upload)
+            data_dict[u'schema'] = uploaded_file.read()
+            if isinstance(data_dict["schema"], (bytes, bytearray)):
+                data_dict["schema"] = data_dict["schema"].decode()
         elif schema_url:
+
             if (not isinstance(schema_url, str) or
                     not schema_url.lower()[:4] == u'http'):
-                raise toolkit.ValidationError({u'schema_url': 'Must be a valid URL'})
+                raise t.ValidationError({u'schema_url': 'Must be a valid URL'})
             data_dict[u'schema'] = schema_url
         elif schema_json:
             data_dict[u'schema'] = schema_json
@@ -220,7 +229,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
             for plugin in p.PluginImplementations(IDataValidation):
                 if not plugin.can_validate(context, resource):
-                    log.debug('Skipping validation for resource {}'.format(resource['id']))
+                    log.debug('Skipping validation for resource %s', resource['id'])
                     return
 
             _run_async_validation(resource[u'id'])
@@ -352,7 +361,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
             p.toolkit.get_action(u'resource_validation_delete')(
                 context, {'resource_id': resource['id']})
             log.info('Validation report deleted for resource %s' % resource['id'])
-        except toolkit.ObjectNotFound:
+        except t.ObjectNotFound:
             log.error('Validation report for resource %s does not exist' % resource['id'])
 
     # IPackageController
@@ -382,20 +391,19 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
 
 def _run_async_validation(resource_id):
-
     try:
-        toolkit.get_action(u'resource_validation_run')(
+        t.get_action(u'resource_validation_run')(
             {u'ignore_auth': True},
             {u'resource_id': resource_id,
              u'async': True})
-    except toolkit.ValidationError as e:
+    except t.ValidationError as e:
         log.warning(
             u'Could not run validation for resource {}: {}'.format(
                 resource_id, str(e)))
 
 
 def _should_remove_unsupported_resource_validation_reports(res_dict):
-    if not toolkit.h.asbool(toolkit.config.get('ckanext.validation.clean_validation_reports', False)):
+    if not t.h.asbool(t.config.get('ckanext.validation.clean_validation_reports', False)):
         return False
     return ((not res_dict.get('format', u'').lower() in settings.SUPPORTED_FORMATS
                 or res_dict.get('url_changed', False))
@@ -416,9 +424,9 @@ def _remove_unsupported_resource_validation_reports(resource_id):
     context = {"user": user['name']}
 
     try:
-        res = toolkit.get_action('resource_show')(context, {"id": resource_id})
-        pkg = toolkit.get_action('package_show')(context, {"id": res['package_id']})
-    except toolkit.ObjectNotFound:
+        res = t.get_action('resource_show')(context, {"id": resource_id})
+        pkg = t.get_action('package_show')(context, {"id": res['package_id']})
+    except t.ObjectNotFound:
         log.error('Resource %s does not exist.' % res['id'])
         return
 
@@ -430,7 +438,12 @@ def _remove_unsupported_resource_validation_reports(resource_id):
         log.info('Unsupported resource format "{}". Deleting validation reports for resource {}'
             .format(res.get(u'format', u'').lower(), res['id']))
         try:
-            toolkit.get_action('resource_validation_delete')(context, {"resource_id": res['id']})
+            t.get_action('resource_validation_delete')(context, {"resource_id": res['id']})
             log.info('Validation reports deleted for resource %s' % res['id'])
-        except toolkit.ObjectNotFound:
+        except t.ObjectNotFound:
             log.error('Validation reports for resource %s do not exist' % res['id'])
+
+def _get_underlying_file(wrapper):
+    if isinstance(wrapper, FlaskFileStorage):
+        return wrapper.stream
+    return wrapper.file

@@ -2,7 +2,9 @@
 import json
 
 from ckan.lib.helpers import url_for_static
-from ckantoolkit import url_for, _, config, asbool, literal, h
+# (canada fork only): ckantoolkit -> toolkit
+from ckan.plugins.toolkit import url_for, _, config, asbool, literal, h
+# (canada fork only): validation badge
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.helpers import render_datetime
 
@@ -57,8 +59,12 @@ def validation_extract_report_from_errors(errors):
         if error == 'validation':
             report = errors[error][0]
             # Remove full path from table source
-            source = report['tables'][0]['source']
-            report['tables'][0]['source'] = source.split('/')[-1]
+            if 'tasks' in report:
+                source = report['tasks'][0]['place']
+                report['tasks'][0]['place'] = source.split('/')[-1]
+            elif 'tables' in report:
+                source = report['tables'][0]['source']
+                report['tables'][0]['source'] = source.split('/')[-1]
             msg = _('''
 There are validation issues with this file, please see the
 <a {params}>report</a> for details. Once you have resolved the issues,
@@ -74,6 +80,8 @@ click the button below to replace the file.''')
 
     return report, errors
 
+def validation_dict(validation_json):
+    return json.loads(validation_json)
 
 def dump_json_value(value, indent=None):
     """
@@ -95,16 +103,6 @@ def bootstrap_version():
         return '3'
     else:
         return '2'
-
-
-def validation_status(resource_id):
-    try:
-        validation = toolkit.get_action(u'resource_validation_show')(
-            {u'ignore_auth': True},
-            {u'resource_id': resource_id})
-        return validation.get('status')
-    except toolkit.ObjectNotFound:
-        return 'unknown'
 
 
 def use_webassets():
