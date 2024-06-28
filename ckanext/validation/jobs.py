@@ -11,7 +11,8 @@ from frictionless import validate, system, Report, Schema, Dialect, Check, i18n
 
 from ckan.model import Session
 
-import ckantoolkit as t
+# (canada fork only): ckantoolkit -> toolkit
+from ckan.plugins import toolkit as t
 from ckan.plugins import plugin_loaded
 from ckan.lib.uploader import get_resource_uploader
 
@@ -93,33 +94,27 @@ def run_validation_job(resource):
     if type(report) == Report:
         report = report.to_dict()
 
-    if 'tasks' in report:
-        for table in report['tasks']:
-            if table['place'].startswith('/'):
-                table['place'] = resource['url']
-    if 'warnings' in report:
-        validation.status = 'error'
-        for index, warning in enumerate(report['warnings']):
-            report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
-    if 'valid' in report:
-        validation.status = 'success' if report['valid'] else 'failure'
-        #FIXME: report vs dict
-        if isinstance(report, dict):
-            validation.report = json.dumps(report)
-        else:
-            validation.report = json.dump(report.to_json())
-    else:
-        #FIXME: report vs dict
-        if isinstance(report, dict):
-            validation.report = json.dumps(report)
-        else:
-            validation.report = json.dump(report.to_json())
-        if 'errors' in report and report['errors']:
+    # (canada fork only): i18n support
+    for lang, _report in  report.items():
+        if 'tasks' in _report:
+            for table in _report['tasks']:
+                if table['place'].startswith('/'):
+                    table['place'] = resource['url']
+        if 'warnings' in _report:
             validation.status = 'error'
-            validation.error = {
-                'message': [str(err) for err in report['errors']]}
+            for index, warning in enumerate(_report['warnings']):
+                _report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
+        if 'valid' in _report:
+            validation.status = 'success' if _report['valid'] else 'failure'
+            validation.report = json.dumps(report)
         else:
-            validation.error = {'message': ['Errors validating the data']}
+            validation.report = json.dumps(report)
+            if 'errors' in _report and _report['errors']:
+                validation.status = 'error'
+                validation.error = {
+                    'message': [str(err) for err in _report['errors']]}
+            else:
+                validation.error = {'message': [t._('Errors validating the data')]}
     validation.finished = datetime.datetime.utcnow()
     Session.add(validation)
     Session.commit()
@@ -166,6 +161,7 @@ def _validate_table(source, _format='csv', schema=None, **options):
         http_session.proxies.update({'http': proxy, 'https': proxy})
 
     report = {}
+    # (canada fork only): i18n support
     langs = t.config.get('ckanext.validation.locales_offered',
                          t.config.get('ckan.locales_offered', 'en'))
     if not langs:
@@ -209,7 +205,7 @@ def _validate_table(source, _format='csv', schema=None, **options):
         for lang in langs:
             # (canada fork only): i18n support
             i18n.set_language(lang)
-            report[lang] = validate(source, format=_format, schema=resource_schema, **options)
+            report[lang] = validate(source, format=_format, schema=resource_schema, **options).to_dict()  # (canada fork only): to_dict
         log.debug('Validating source: %s', source)
 
     return report
