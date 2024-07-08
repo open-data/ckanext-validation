@@ -12,7 +12,8 @@ import ckan.lib.uploader as uploader
 # (canada fork only): capability to use designated queues per resource
 from ckan.lib.jobs import DEFAULT_QUEUE_NAME
 
-import ckantoolkit as t
+# (canada fork only): ckantoolkit -> toolkit
+from ckan.plugins import toolkit as t
 
 from ckanext.validation.model import Validation
 from ckanext.validation.interfaces import IDataValidation
@@ -436,11 +437,17 @@ def _add_default_formats(search_data_dict):
 
 
 def _validation_dictize(validation):
+    report = None
+    # (canada fork only): i18n support
+    if validation.reports:
+        report = json.loads(validation.reports)
+        if (t.h.lang() or 'en') in report:
+            report = report.get(t.h.lang() or 'en')
     out = {
         'id': validation.id,
         'resource_id': validation.resource_id,
         'status': validation.status,
-        'reports': validation.reports,
+        'report': report,  # (canada fork only): i18n support
         'error': validation.error,
     }
     out['created'] = (

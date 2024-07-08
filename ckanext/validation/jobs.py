@@ -106,9 +106,9 @@ def run_validation_job(resource):
                 _report['warnings'][index] = re.sub(r'Table ".*"', 'Table', warning)
         if 'valid' in _report:
             validation.status = 'success' if _report['valid'] else 'failure'
-            validation.report = json.dumps(report)
+            validation.reports = json.dumps(report)
         else:
-            validation.report = json.dumps(report)
+            validation.reports = json.dumps(report)
             if 'errors' in _report and _report['errors']:
                 validation.status = 'error'
                 validation.error = {
