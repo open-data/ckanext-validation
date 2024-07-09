@@ -31,7 +31,8 @@
         </div>
 
         {% if validation.report %}
-            <div id="report" {% if h.bootstrap_version() == '2' %}class="bs2"{% endif %} data-module="validation-report" data-module-report="{{ validation.report }}"></div>
+            {# (canada fork only): dump json #}
+            <div id="report" {% if h.bootstrap_version() == '2' %}class="bs2"{% endif %} data-module="validation-report" data-module-report="{{ h.dump_json_value(validation.report) }}"></div>
         {% endif %}
 
       </div>
