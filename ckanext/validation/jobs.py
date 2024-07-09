@@ -98,8 +98,8 @@ def run_validation_job(resource):
     for lang, _report in  report.items():
         if 'tasks' in _report:
             for table in _report['tasks']:
-                if table['place'].startswith('/'):
-                    table['place'] = resource['url']
+                # (canada fork only): hide CloudStorage URLs
+                table['place'] = resource['url']
         if 'warnings' in _report:
             validation.status = 'error'
             for index, warning in enumerate(_report['warnings']):
