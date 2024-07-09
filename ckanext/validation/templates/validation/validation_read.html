@@ -1,7 +1,8 @@
 {% extends "package/base.html" %}
 
 
-{%- block subtitle %}{{ _('Validation Report') }}{% endblock -%}
+{# (canada fork only): combined h2 from pre_primary into subtitle #}
+{%- block subtitle %}{{ _('Validation Report') }} - {{ h.resource_display_name(resource) | truncate(50) }}{% endblock -%}
 
 {% block breadcrumb_content_selected %}{% endblock %}
 {% block breadcrumb_content %}
@@ -19,15 +20,50 @@
 
         </div>
 
-        <h2 class="page-heading">{{ h.resource_display_name(resource) | truncate(50) }}
-        {{ h.get_validation_badge(resource)|safe }}
-        </h2>
+        {# (canada fork only): added action toolbar #}
+        <div class="row">
+          <div class="col-md-12 canada-action-toolbar">
+            <header class="module-content page-header">
+              <div class="content_action">
+                <script>
+                  document.write('<a class="btn btn-default" href=\'' + document.referrer + '\';"><i class="fa fa-arrow-left" aria-hidden="true"></i>'+'{{ _("Go back") }}'+'</a>');
+                </script>
+                {%- link_for _('View resource'), named_route=pkg.type ~ '_resource.read', id=pkg.name, resource_id=resource.id, class_='btn btn-default', icon='eye' -%}
+              </div>
+            <ul class="nav nav-tabs">
+              {% if h.check_access('package_update', {'id':pkg.id }) %}
+                <li>{% link_for _('Edit resource'), named_route=pkg.type ~ '_resource.edit', id=pkg.name, resource_id=resource.id, icon='pencil' %}</li>
+              {% endif %}
+            </ul>
+          </header>
+          </div>
+        </div>
 
-        <div class="validation-details">
-            <div>{{ _('Validation timestamp') }}: {{ h.render_datetime(resource.validation_timestamp, with_hours=True) }}</div>
-            {% if validation.report %}
-            <div>{{ _('Duration') }}: {{ validation.report["stats"]["seconds"] }}s</div>
-            {% endif %}
+        {# (canada fork only): customized info section #}
+        <div class="panel panel-primary mrgn-tp-lg">
+          <div class="panel-heading">
+            <div class="panel-title">{{ _("Validation Information") }}</div>
+          </div>
+          <div class="panel-body">
+            <div class="validation-details">
+              <div>
+                {{ _('Validation status:') }}
+                {% if validation.get('status') == 'success' %}
+                  <span class="text-success"><strong>{{ _('Valid data') }}</strong></span>
+                {% elif validation.get('status') == 'failure' %}
+                  <span class="text-danger"><strong>{{ _('Invalid data') }}</strong></span>
+                {% elif validation.get('status') == 'error' %}
+                  <span class="text-warning"><strong>{{ _('Error during validation') }}</strong></span>
+                {% else %}
+                  <span class="text-secondary"><strong>{{ _('Data validation unknown') }}</strong></span>
+                {% endif %}
+              </div>
+              <div>{{ _('Validation timestamp:') }} <em>{{ h.render_datetime(resource.validation_timestamp, with_hours=True) }}</em></div>
+              {% if validation.report %}
+              <div>{{ _('Duration:') }} <em>{{ validation.report["stats"]["seconds"] }}s</em></div>
+              {% endif %}
+          </div>
+          </div>
         </div>
 
         {% if validation.report %}
