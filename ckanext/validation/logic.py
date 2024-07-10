@@ -4,6 +4,9 @@ import datetime
 import logging
 import json
 
+# (canada fork only): i18n support
+from flask import has_request_context
+
 from sqlalchemy.orm.exc import NoResultFound
 
 import ckan.plugins as plugins
@@ -184,7 +187,13 @@ def resource_validation_show(context, data_dict):
         raise t.ObjectNotFound(
             'No validation report exists for this resource')
 
-    return _validation_dictize(validation)
+    # (canada fork only): i18n support
+    lang = 'en'
+    if has_request_context():
+        lang = t.h.lang() or lang
+    lang = data_dict.pop('lang', lang)
+
+    return _validation_dictize(validation, lang)
 
 
 def resource_validation_delete(context, data_dict):
@@ -436,13 +445,13 @@ def _add_default_formats(search_data_dict):
     search_data_dict['fq_list'].append(' OR '.join(filter_formats_query))
 
 
-def _validation_dictize(validation):
+def _validation_dictize(validation, lang='en'):  # (canada fork only): i18n support
     report = None
     # (canada fork only): i18n support
     if validation.reports:
         report = json.loads(validation.reports)
-        if (t.h.lang() or 'en') in report:
-            report = report.get(t.h.lang() or 'en')
+        if lang in report:
+            report = report.get(lang)
     out = {
         'id': validation.id,
         'resource_id': validation.resource_id,
