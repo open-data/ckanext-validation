@@ -458,6 +458,7 @@ def _validation_dictize(validation, lang='en'):  # (canada fork only): i18n supp
         'status': validation.status,
         'report': report,  # (canada fork only): i18n support
         'error': validation.error,
+        'language': lang,
     }
     out['created'] = (
         validation.created.isoformat() if validation.created else None)
