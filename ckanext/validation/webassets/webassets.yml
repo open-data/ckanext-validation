@@ -25,6 +25,9 @@ report-form-css:
     - css/validation-report-form.css
 
 report-js:
+  extra:
+    preload:
+      - base/main
   filter: rjsmin
   output: ckanext-validation/%(version)s_report.js
   contents:
