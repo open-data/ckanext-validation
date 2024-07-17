@@ -23,7 +23,9 @@ from ckanext.validation.utils import get_update_mode_from_config
 log = logging.getLogger(__name__)
 
 
-def run_validation_job(resource):
+def run_validation_job(resource, skip_xloader=False):  # (canada fork only): skip xloading option
+
+    skip_xloader = resource.pop('skip_xloader', skip_xloader)
 
     log.debug('Validating resource %s', resource['id'])
 
@@ -136,9 +138,12 @@ def run_validation_job(resource):
     }
     t.get_action('resource_patch')(patch_context, data_dict)
 
+    # (canada fork only): skip xloading option
     # load successfully validated resources to datastore using xloader
     if validation.status == u'success':
-        if plugin_loaded('xloader'):
+        if skip_xloader:
+            log.debug('Skipping Xloadering resource %s', resource['id'])
+        elif plugin_loaded('xloader'):
             t.get_action('xloader_submit')(
                 {'ignore_auth': True,
                  'user': t.get_action('get_site_user')({'ignore_auth': True})[

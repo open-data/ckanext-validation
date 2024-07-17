@@ -96,6 +96,8 @@ def resource_validation_run(context, data_dict):
 
     # TODO: limit to sysadmins
     async_job = data_dict.get(u'async', True)
+    # (canada fork only): skip xloading option
+    skip_xloader = data_dict.pop('skip_xloader', False)
 
     # Ensure format is supported
     if not resource.get(u'format', u'').lower() in settings.SUPPORTED_FORMATS:
@@ -142,9 +144,10 @@ def resource_validation_run(context, data_dict):
         queue = DEFAULT_QUEUE_NAME
         if plugins.toolkit.asbool(plugins.toolkit.config.get('ckanext.validation.use_designated_queues')):
             queue = resource['id']
+        resource['skip_xloader'] = skip_xloader  # (canada fork only): skip xloading option
         enqueue_job(run_validation_job, [resource], title="Validate Resource", queue=queue)
     else:
-        run_validation_job(resource)
+        run_validation_job(resource, skip_xloader=skip_xloader)  # (canada fork only): skip xloading option
 
 
 @t.side_effect_free
