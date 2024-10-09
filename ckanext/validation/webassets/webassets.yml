@@ -30,6 +30,9 @@ report-form-css:
     - vendor/frictionless-components/frictionless-components.min.css
 
 report-js:
+  extra:
+    preload:
+      - base/main
   filter: rjsmin
   output: ckanext-validation/%(version)s_report.js
   contents:
