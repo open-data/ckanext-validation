@@ -7,12 +7,21 @@ from ckan.plugins.toolkit import url_for, _, config, asbool, literal, h
 # (canada fork only): validation badge
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.helpers import render_datetime
+# (canada fork only): only show badge for supported formats
+from ckanext.validation.settings import SUPPORTED_FORMATS
 
 
 def get_validation_badge(resource, in_listing=False):
 
     if in_listing and not asbool(
             config.get('ckanext.validation.show_badges_in_listings', True)):
+        return ''
+
+    # (canada fork only): only show badge for supported formats
+    if not resource.get('url_type') == 'upload' or \
+    resource.get('format', '').lower() not in SUPPORTED_FORMATS or \
+    resource.get('format', '').upper() not in SUPPORTED_FORMATS:
+        # we only want to show badges for uploads of supported validation formats
         return ''
 
     try:
