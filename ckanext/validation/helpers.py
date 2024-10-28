@@ -18,9 +18,8 @@ def get_validation_badge(resource, in_listing=False):
         return ''
 
     # (canada fork only): only show badge for supported formats
-    if not resource.get('url_type') == 'upload' or \
-    resource.get('format', '').lower() not in SUPPORTED_FORMATS or \
-    resource.get('format', '').upper() not in SUPPORTED_FORMATS:
+    if resource.get('url_type') != 'upload' or \
+    resource.get('format') not in SUPPORTED_FORMATS:
         # we only want to show badges for uploads of supported validation formats
         return ''
 
