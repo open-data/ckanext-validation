@@ -173,8 +173,8 @@ def _validate_table(source, _format='csv', schema=None, **options):
         langs = t.config.get('ckan.locale_default', 'en')
 
     # (canada fork only): extra logging
-    #FIXME: figure out max rows / min rows... table-dimensions check???
-    log.debug(u'Validating up to %s rows', options.get('max_rows', 1000))
+    if options.get('limit_rows', options.get('max_rows')):  # no limit in frictionless-py
+        log.debug(u'Validating up to %s rows', options.get('limit_rows', options.get('max_rows', 1000)))
     if options.get('skip_checks') and isinstance(options.get('skip_checks'), list):
         log.debug(u'Skipping checks: %r', options.get('skip_checks'))
     if options.get('checks'):

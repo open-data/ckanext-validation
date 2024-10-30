@@ -1,8 +1,10 @@
 {% ckan_extends %}
 
+{% set validation_badge = h.get_validation_badge(res, in_listing=True)|safe %}
+
 {% block resource_item_title %}
-{{ super() }}
-{{ h.get_validation_badge(res, in_listing=True)|safe }}
+  {{ super() }}
+  {{ validation_badge }}
 
   {% if h.use_webassets() %}
       {% snippet 'validation/snippets/validation_asset.html', name='ckanext-validation/validation-css' %}
@@ -13,3 +15,10 @@
 {% endblock %}
 
 
+{% block resource_item_explore_inner %}
+  {{ super() }}
+  {# (canada fork only): add more links #}
+  {% if validation_badge %}
+    <li>{% link_for _('Validation'), named_route='validation.read', id=pkg.name, resource_id=res.id, class_='dropdown-item', icon='tasks' %}</li>
+  {% endif %}
+{% endblock %}

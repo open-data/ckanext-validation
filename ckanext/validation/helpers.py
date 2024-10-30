@@ -35,9 +35,11 @@ def get_validation_badge(resource, in_listing=False):
         'failure': _('Invalid data'),
         'error': _('Error during validation'),
         'unknown': _('Data validation unknown'),
+        # (canada fork only): deprecate old goodtable reports
+        'deprecated_report': _('Validation report type has been deprecated'),
     }
 
-    if validation.get('status') in ['success', 'failure', 'error']:
+    if validation.get('status') in ['success', 'failure', 'error', 'deprecated_report']:
         status = validation.get('status')
     else:
         status = 'unknown'

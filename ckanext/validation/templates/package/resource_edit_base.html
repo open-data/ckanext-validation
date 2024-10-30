@@ -1,0 +1,10 @@
+{% ckan_extends %}
+
+{# (canada fork only): add validation toolbar item #}
+{% block inner_primary_nav %}
+  {% set validation_badge = h.get_validation_badge(resource)|safe %}
+  {{ super() }}
+  {% if validation_badge %}
+    {{ h.build_nav_icon('validation.read', _('Validation'), id=pkg.name, resource_id=resource.id, icon='tasks') }}
+  {% endif %}
+{% endblock %}

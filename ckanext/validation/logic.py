@@ -452,9 +452,20 @@ def _validation_dictize(validation, lang='en'):  # (canada fork only): i18n supp
     report = None
     # (canada fork only): i18n support
     if validation.reports:
-        report = json.loads(validation.reports)
-        if lang in report:
-            report = report.get(lang)
+        # (canada fork only): deprecate old goodtable reports
+        try:
+            report = json.loads(validation.reports)
+            if lang in report:
+                report = report.get(lang)
+        except (ValueError, TypeError):
+            return {
+                'id': validation.id,
+                'resource_id': validation.resource_id,
+                'status': 'deprecated_report',
+                'report': None,
+                'error': validation.error,
+                'language': lang,
+            }
     out = {
         'id': validation.id,
         'resource_id': validation.resource_id,

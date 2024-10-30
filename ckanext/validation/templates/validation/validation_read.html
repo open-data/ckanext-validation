@@ -1,88 +1,100 @@
-{% extends "package/base.html" %}
-
+{# (canada fork only): extend resource_edit_base #}
+{% set package = dataset %}
+{% set can_edit = h.check_access('package_update', {'id': package.id }) %}
+{% if can_edit %}
+  {% extends "package/resource_edit_base.html" %}
+{% else %}
+  {% extends "package/base.html" %}
+{% endif %}
 
 {# (canada fork only): combined h2 from pre_primary into subtitle #}
 {%- block subtitle %}{{ _('Validation Report') }} - {{ h.resource_display_name(resource) | truncate(50) }}{% endblock -%}
 
 {% block breadcrumb_content_selected %}{% endblock %}
 {% block breadcrumb_content %}
-  {{ super() }}
-
-  <li><a href="{{ h.url_for(pkg.type ~ '_resource.read', id=dataset.id, resource_id=resource.id ) }}">{{ h.resource_display_name(resource)|truncate(30) }}</a></li>
+  <li><a href="{{ h.url_for(dataset.type ~ '.read', id=dataset.id ) }}">{{ h.get_translated(dataset, 'title')|truncate(30) }}</a></li>
+  <li><a href="{{ h.url_for(dataset.type ~ '_resource.read', id=dataset.id, resource_id=resource.id ) }}">{{ h.resource_display_name(resource)|truncate(30) }}</a></li>
   <li class="active"><a href="">{{ _('Validation Report') }}</a></li>
 {% endblock %}
 
 {% block pre_primary %}
-
+  {# (canada fork only): added action toolbar #}
+  {{ super() }}
+  {% if not can_edit %}
     <section class="module module-validation">
       <div class="module-content">
-        <div class="actions">
-
-        </div>
-
-        {# (canada fork only): added action toolbar #}
-        <div class="row">
-          <div class="col-md-12 canada-action-toolbar">
-            <header class="module-content page-header">
-              <div class="content_action">
-                <script>
-                  document.write('<a class="btn btn-default" href=\'' + document.referrer + '\';"><i class="fa fa-arrow-left" aria-hidden="true"></i>'+'{{ _("Go back") }}'+'</a>');
-                </script>
-                {%- link_for _('View resource'), named_route=pkg.type ~ '_resource.read', id=pkg.name, resource_id=resource.id, class_='btn btn-default', icon='eye' -%}
-              </div>
-            <ul class="nav nav-tabs">
-              {% if h.check_access('package_update', {'id':pkg.id }) %}
-                <li>{% link_for _('Edit resource'), named_route=pkg.type ~ '_resource.edit', id=pkg.name, resource_id=resource.id, icon='pencil' %}</li>
-              {% endif %}
-            </ul>
-          </header>
+        <div>
+          <div class="row">
+            <div class="col-md-12 canada-action-toolbar">
+              <header class="module-content page-header">
+                <div class="content_action">
+                  {%- link_for _('View resource'), named_route=pkg.type ~ '_resource.read', id=pkg.name, resource_id=resource.id, class_='btn btn-default', icon='eye' -%}
+                </div>
+            </header>
+            </div>
           </div>
         </div>
-
-        {# (canada fork only): customized info section #}
-        <div class="panel panel-primary mrgn-tp-lg">
-          <div class="panel-heading">
-            <div class="panel-title">{{ _("Validation Information") }}</div>
-          </div>
-          <div class="panel-body">
-            <div class="validation-details">
-              <div>
-                {{ _('Validation status:') }}
-                {% if validation.get('status') == 'success' %}
-                  <span class="text-success"><strong>{{ _('Valid data') }}</strong></span>
-                {% elif validation.get('status') == 'failure' %}
-                  <span class="text-danger"><strong>{{ _('Invalid data') }}</strong></span>
-                {% elif validation.get('status') == 'error' %}
-                  <span class="text-warning"><strong>{{ _('Error during validation') }}</strong></span>
-                {% else %}
-                  <span class="text-secondary"><strong>{{ _('Data validation unknown') }}</strong></span>
-                {% endif %}
-              </div>
-              <div>{{ _('Validation timestamp:') }} <em>{{ h.render_datetime(resource.validation_timestamp, with_hours=True) }}</em></div>
-              {% if validation.report %}
-              <div>{{ _('Duration:') }} <em>{{ validation.report["stats"]["seconds"] }}s</em></div>
-              {% endif %}
-          </div>
-          </div>
-        </div>
-
-        {% if validation.report %}
-            {# (canada fork only): dump json #}
-            <div id="report" {% if h.bootstrap_version() == '2' %}class="bs2"{% endif %} data-module="validation-report" data-module-report="{{ h.dump_json_value(validation.report) }}"></div>
-        {% endif %}
-
       </div>
     </section>
-{% if h.use_webassets() %}
-    {% snippet 'validation/snippets/validation_asset.html', name='ckanext-validation/report-css' %}
-    {% snippet 'validation/snippets/validation_asset.html', name='ckanext-validation/report-js' %}
-{% else %}
-    {% snippet 'validation/snippets/validation_resource.html', name='ckanext-validation/report' %}
-{% endif %}
-
+  {% endif %}
 {% endblock %}
 
+{% block primary_content_inner %}
+  {# (canada fork only): customized info section #}
+  <div class="panel panel-primary mrgn-tp-lg">
+    <div class="panel-heading">
+      <div class="panel-title">{{ _("Validation Information") }}</div>
+    </div>
+    <div class="panel-body">
+      <div class="validation-details">
+        <div>
+          {{ _('Validation status:') }}
+          {% if validation.get('status') == 'success' %}
+            <span class="text-success"><strong>{{ _('Valid data') }}</strong></span>
+          {% elif validation.get('status') == 'failure' %}
+            <span class="text-danger"><strong>{{ _('Invalid data') }}</strong></span>
+          {% elif validation.get('status') == 'error' %}
+            <span class="text-warning"><strong>{{ _('Error during validation') }}</strong></span>
+          {% elif validation.get('status') == 'deprecated_report' %}
+            <span class="text-warning"><strong>{{ _('Validation report type has been deprecated. Try re-running the validation.') }}</strong></span>
+          {% else %}
+            <span class="text-secondary"><strong>{{ _('Data validation unknown') }}</strong></span>
+          {% endif %}
+        </div>
+        <div>{{ _('Validation timestamp:') }} <em>{{ h.render_datetime(resource.validation_timestamp, with_hours=True) }}</em></div>
+        {% if validation.report %}
+        <div>{{ _('Duration:') }} <em>{{ validation.report["stats"]["seconds"] }}s</em></div>
+        {% endif %}
+        {% if can_edit %}
+          <div>
+            <form method="POST" action="{{ h.url_for('validation.run', id=pkg.name, resource_id=resource.id) }}">
+              {% if 'csrf_input' in h %}
+                {{ h.csrf_input() }}
+              {% endif %}
+              <input class="btn btn-primary mrgn-tp-md" type="submit" value="{{ _('Run Validation') }}">
+            </form>
+          </div>
+        {% endif %}
+    </div>
+    </div>
+  </div>
+  {% if validation.report %}
+      {# (canada fork only): dump json #}
+      <div id="report" {% if h.bootstrap_version() == '2' %}class="bs2"{% endif %} data-module="validation-report" data-module-report="{{ h.dump_json_value(validation.report) }}"></div>
+  {% endif %}
+  {% if h.use_webassets() %}
+    {% snippet 'validation/snippets/validation_asset.html', name='ckanext-validation/report-css' %}
+    {% snippet 'validation/snippets/validation_asset.html', name='ckanext-validation/report-js' %}
+  {% else %}
+      {% snippet 'validation/snippets/validation_resource.html', name='ckanext-validation/report' %}
+  {% endif %}
+{% endblock %}
 
-{% block primary %}{% endblock %}
-
-{% block secondary %}{% endblock %}
+{% block secondary_content %}
+  {% if not can_edit %}
+    {% snippet 'package/snippets/resource_info.html', res=resource %}
+    {% snippet 'package/snippets/resources.html', pkg=pkg, active=resource.id %}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
