@@ -81,10 +81,9 @@ msgstr "La ressource n'a pas été trouvée"
 #: ckanext/validation/templates/package/resource_edit_base.html:8
 #: ckanext/validation/templates/package/resource_read.html:23
 #: ckanext/validation/templates/package/snippets/resource_item.html:22
-#, fuzzy
 #| msgid "Validation Report"
 msgid "Validation"
-msgstr "Rapport de validation"
+msgstr "Validation"
 
 #: ckanext/validation/templates/scheming/form_snippets/resource_schema.html:16
 #: ckanext/validation/webassets/js/module-resource-schema.js:180
