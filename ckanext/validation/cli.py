@@ -27,12 +27,29 @@ def init_db():
 
 # (canada fork only): add run_validation command
 @validation.command()
-@click.option('-r', '--resource-id', type=click.STRING, help='A CKAN Resource ID.', required=True)
-def run_validation(resource_id):
-    """Runs validation instantly for a given resource."""
-    try:
-        resource = get_action('resource_show')({"ignore_auth": True}, {"id": resource_id})
-    except ObjectNotFound:
-        click.echo("Resource not found: %s" % resource_id)
+@click.option('-r', '--resource-id', type=click.STRING, help='A CKAN Resource ID.', required=False)
+@click.option('-d', '--dataset-id', type=click.STRING, help='A CKAN Dataset ID.', required=False)
+@click.option('-s', '--skip-xloader', type=click.BOOL, help='Skip XLoadering the resource after validation.', is_flag=True)
+def run_validation(resource_id=None, dataset_id=None, skip_xloader=False):
+    """Runs validation instantly for a given dataset or resource."""
+    if resource_id and dataset_id:
+        click.echo("--resource-id and --dataset-id are mutually exclusive")
         click.Abort
-    run_validation_job(resource)
+    resources = []
+    if resource_id:
+        try:
+            resources.append(get_action('resource_show')({"ignore_auth": True}, {"id": resource_id}))
+        except ObjectNotFound:
+            click.echo("Resource not found: %s" % resource_id)
+            click.Abort
+    if dataset_id:
+        try:
+            dataset = get_action('package_show')({"ignore_auth": True}, {"id": dataset_id})
+            for resource in dataset.get('resources'):
+                resources.append(resource)
+        except ObjectNotFound:
+            click.echo("Dataset not found: %s" % resource_id)
+            click.Abort
+    for resource in resources:
+        run_validation_job(resource, skip_xloader)
+    click.echo("\nDONE!")
