@@ -140,8 +140,9 @@ def resource_validation_run(context, data_dict):
     Session.commit()
 
     if async_job:
-        # (canada fork only): capability to use designated queues per resource
-        queue = DEFAULT_QUEUE_NAME
+        # (canada fork only): capability to use designated queues per resource, queue_name
+        #TODO: upstream contrib queue_name
+        queue = plugins.toolkit.config.get('ckanext.validation.queue_name', DEFAULT_QUEUE_NAME)
         if plugins.toolkit.asbool(plugins.toolkit.config.get('ckanext.validation.use_designated_queues')):
             queue = resource['id']
         resource['skip_xloader'] = skip_xloader  # (canada fork only): skip xloading option

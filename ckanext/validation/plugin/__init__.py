@@ -39,6 +39,10 @@ from ckanext.validation.utils import (
 from ckanext.validation.interfaces import IDataValidation
 from ckanext.validation import blueprints, cli
 
+# (canada fork only): capability to use designated queues per resource, queue_name
+#TODO: upstream contrib queue_name
+from ckan.lib.jobs import DEFAULT_QUEUE_NAME
+
 
 ALLOWED_UPLOAD_TYPES = (cgi.FieldStorage, FlaskFileStorage)
 log = logging.getLogger(__name__)
@@ -351,8 +355,14 @@ to create the database tables:
                 _run_async_validation(resource_id)
 
             if _should_remove_unsupported_resource_validation_reports(data_dict):
+                # (canada fork only): capability to use designated queues per resource, queue_name
+                #TODO: upstream contrib queue_name
+                queue = p.toolkit.config.get('ckanext.validation.queue_name', DEFAULT_QUEUE_NAME)
+                if p.toolkit.asbool(p.toolkit.config.get('ckanext.validation.use_designated_queues')):
+                    queue = resource_id
                 p.toolkit.enqueue_job(fn=_remove_unsupported_resource_validation_reports, args=[resource_id],
-                                      title="Remove Validation Reports for Unsupported Format or Type")
+                                      title="Remove Validation Reports for Unsupported Format or Type",
+                                      queue=queue)
 
     # (canada fork only): 2.10+ support
     # TODO: upstream contrib??
