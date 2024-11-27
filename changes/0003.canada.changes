@@ -1,0 +1,1 @@
+You can now specify a REDIS queue with `ckanext.validation.queue_name` config option.
