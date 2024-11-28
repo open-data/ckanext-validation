@@ -30,7 +30,7 @@ msgstr "Aucun rapport de validation n'existe pour cette ressource"
 
 #: ckanext/validation/blueprints.py:58
 msgid "Resource queued for validation."
-msgstr ""
+msgstr "Ressource en attente de validation."
 
 #: ckanext/validation/helpers.py:34
 #: ckanext/validation/templates/validation/validation_read.html:53
@@ -54,7 +54,7 @@ msgstr "Validation des données inconnue"
 
 #: ckanext/validation/helpers.py:39
 msgid "Validation report type has been deprecated"
-msgstr ""
+msgstr "Le type de rapport de validation a été déclaré obsolète"
 
 #: ckanext/validation/helpers.py:78
 msgid ""
@@ -72,7 +72,7 @@ msgstr ""
 
 #: ckanext/validation/jobs.py:119
 msgid "Errors validating the data"
-msgstr ""
+msgstr "Erreurs de validation des données"
 
 #: ckanext/validation/logic.py:624 ckanext/validation/logic.py:638
 msgid "Resource was not found."
@@ -112,16 +112,18 @@ msgstr "Afficher la ressource"
 #: ckanext/validation/templates/validation/validation_read.html:46
 #| msgid "Validation Report"
 msgid "Validation Information"
-msgstr ""
+msgstr "Renseignements sur la validation"
 
 #: ckanext/validation/templates/validation/validation_read.html:51
 #| msgid "Validation timestamp"
 msgid "Validation status:"
-msgstr ""
+msgstr "Statut de validation :"
 
 #: ckanext/validation/templates/validation/validation_read.html:59
 msgid "Validation report type has been deprecated. Try re-running the validation."
 msgstr ""
+"Le type de rapport de validation a été déclaré obsolète. Essayez de "
+"réexécuter la validation."
 
 #: ckanext/validation/templates/validation/validation_read.html:64
 #| msgid "Validation timestamp"
@@ -130,12 +132,12 @@ msgstr "Heure système de validation :"
 
 #: ckanext/validation/templates/validation/validation_read.html:66
 msgid "Duration:"
-msgstr ""
+msgstr "Durée :"
 
 #: ckanext/validation/templates/validation/validation_read.html:74
 #| msgid "Error during validation"
 msgid "Run Validation"
-msgstr ""
+msgstr "Exécutez la validation"
 
 #: ckanext/validation/templates/validation/snippets/validation_report_dialog.html:6
 #: ckanext/validation/templates/validation/snippets/validation_report_dialog_bs2.html:5
