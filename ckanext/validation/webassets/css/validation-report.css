@@ -7,3 +7,11 @@
 .bs2 .goodtables-ui-report .table-container {
   overflow-y: inherit;
 }
+
+/* (canada fork only): i18n fixes */
+.frictionless-components-report .file-count{
+  display: none !important;
+}
+.frictionless-components-report .error-details .error-list-heading{
+  display: none !important;
+}

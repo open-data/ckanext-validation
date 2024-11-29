@@ -46,5 +46,7 @@ report-css:
   output: ckanext-validation/%(version)s_validation_report.css
   contents:
     - vendor/frictionless-components/frictionless-components.min.css
+    # (canada fork only): i18n fixes
+    - css/validation-report.css
 
 
