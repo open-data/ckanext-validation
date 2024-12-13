@@ -115,7 +115,7 @@ def resource_validation_run(context, data_dict):
             {u'url': u'Resource must have a valid URL or an uploaded file'})
 
     # (canada fork only): upload and white listed sources
-    allowed_domains = t.config.get('ckanext.canada.datastore_source_domain_white_list', '').split()
+    allowed_domains = t.config.get('ckanext.canada.datastore_source_domain_allow_list', [])
     url = resource.get('url')
     url_parts = urlsplit(url)
     if (resource.get('url_type') != 'upload' and url_parts.netloc not in allowed_domains):

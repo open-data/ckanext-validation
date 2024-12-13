@@ -21,7 +21,7 @@ def get_validation_badge(resource, in_listing=False):
         return ''
 
     # (canada fork only): only show badge for supported formats
-    allowed_domains = config.get('ckanext.canada.datastore_source_domain_white_list', '').split()
+    allowed_domains = config.get('ckanext.canada.datastore_source_domain_allow_list', [])
     url = resource.get('url')
     url_parts = urlsplit(url)
     if (resource.get('url_type') != 'upload' and url_parts.netloc not in allowed_domains) or \
