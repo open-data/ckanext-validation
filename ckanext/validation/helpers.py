@@ -1,6 +1,9 @@
 # encoding: utf-8
 import json
 
+# (canada fork only): only show badge for supported formats
+from six.moves.urllib.parse import urlsplit
+
 from ckan.lib.helpers import url_for_static
 # (canada fork only): ckantoolkit -> toolkit
 from ckan.plugins.toolkit import url_for, _, config, asbool, literal, h
@@ -18,7 +21,10 @@ def get_validation_badge(resource, in_listing=False):
         return ''
 
     # (canada fork only): only show badge for supported formats
-    if resource.get('url_type') != 'upload' or \
+    allowed_domains = config.get('ckanext.canada.datastore_source_domain_allow_list', [])
+    url = resource.get('url')
+    url_parts = urlsplit(url)
+    if (resource.get('url_type') != 'upload' and url_parts.netloc not in allowed_domains) or \
     resource.get('format') not in SUPPORTED_FORMATS:
         # we only want to show badges for uploads of supported validation formats
         return ''

@@ -4,6 +4,9 @@ import datetime
 import logging
 import json
 
+# (canada fork only): upload and white listed sources
+from six.moves.urllib.parse import urlsplit
+
 # (canada fork only): i18n support
 from flask import has_request_context
 
@@ -111,10 +114,12 @@ def resource_validation_run(context, data_dict):
         raise t.ValidationError(
             {u'url': u'Resource must have a valid URL or an uploaded file'})
 
-    # only uploaded files may be validated for now
-    if resource.get(u'url_type') != u'upload':
-        raise t.ValidationError(
-            {u'url': u'Only uploaded files can be validated.'})
+    # (canada fork only): upload and white listed sources
+    allowed_domains = t.config.get('ckanext.canada.datastore_source_domain_allow_list', [])
+    url = resource.get('url')
+    url_parts = urlsplit(url)
+    if (resource.get('url_type') != 'upload' and url_parts.netloc not in allowed_domains):
+        raise t.ValidationError({'url': 'Only uploaded resources and white listed sources can be validated.'})
 
     # Check if there was an existing validation for the resource
 
