@@ -2,7 +2,7 @@
 
 from flask import Blueprint
 
-# (canada fork only): ckantoolkit -> toolkit
+# (canada fork only): ckan.plugins.toolkit
 # (canada fork only): c -> g
 from ckan.plugins.toolkit import g, NotAuthorized, ObjectNotFound, abort, _, render, get_action, h
 

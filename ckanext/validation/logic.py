@@ -18,7 +18,7 @@ import ckan.lib.uploader as uploader
 # (canada fork only): capability to use designated queues per resource
 from ckan.lib.jobs import DEFAULT_QUEUE_NAME
 
-# (canada fork only): ckantoolkit -> toolkit
+# (canada fork only): ckan.plugins.toolkit
 from ckan.plugins import toolkit as t
 
 from ckanext.validation.model import Validation

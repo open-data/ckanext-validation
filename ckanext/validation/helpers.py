@@ -5,7 +5,7 @@ import json
 from six.moves.urllib.parse import urlsplit
 
 from ckan.lib.helpers import url_for_static
-# (canada fork only): ckantoolkit -> toolkit
+# (canada fork only): ckan.plugins.toolkit
 from ckan.plugins.toolkit import url_for, _, config, asbool, literal, h
 # (canada fork only): validation badge
 import ckan.plugins.toolkit as toolkit

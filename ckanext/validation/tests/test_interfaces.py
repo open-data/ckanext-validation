@@ -4,7 +4,8 @@ import pytest
 from ckan import plugins as p
 from ckan.tests import helpers, factories
 
-import ckantoolkit as t
+# (canada fork only): ckan.plugins.toolkit
+import ckan.plugins.toolkit as t
 
 from ckanext.validation.interfaces import IDataValidation
 from ckanext.validation.tests.helpers import VALID_REPORT

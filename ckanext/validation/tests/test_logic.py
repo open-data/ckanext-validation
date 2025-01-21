@@ -9,7 +9,8 @@ from ckan import model
 from ckan.tests.helpers import call_action, call_auth
 from ckan.tests import factories
 
-import ckantoolkit as t
+# (canada fork only): ckan.plugins.toolkit
+import ckan.plugins.toolkit as t
 
 from ckanext.validation.model import Validation
 from ckanext.validation.tests.helpers import (

@@ -7,7 +7,7 @@ from werkzeug.datastructures import FileStorage as FlaskFileStorage
 import ckan.plugins as p
 # (canada fork only): i18n support
 from ckan.lib.plugins import DefaultTranslation
-# (canada fork only): ckantoolkit -> toolkit
+# (canada fork only): ckan.plugins.toolkit
 import ckan.plugins.toolkit as t
 
 from ckanext.validation import settings

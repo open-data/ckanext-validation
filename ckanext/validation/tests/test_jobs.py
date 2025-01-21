@@ -3,7 +3,8 @@ from unittest import mock
 import json
 import io
 
-import ckantoolkit
+# (canada fork only): ckan.plugins.toolkit
+from ckan.plugins import toolkit
 
 from ckan.lib.uploader import ResourceUpload
 from ckan.tests.helpers import call_action
@@ -36,7 +37,7 @@ class TestValidationJob(object):
     @pytest.mark.ckan_config("ckanext.validation.run_on_create_async", False)
     @mock.patch("ckanext.validation.jobs.validate", return_value=VALID_REPORT)
     @mock.patch.object(Session, "commit")
-    @mock.patch.object(ckantoolkit, "get_action")
+    @mock.patch.object(toolkit, "get_action")  # (canada fork only): ckan.plugins.toolkit
     def test_job_run_no_schema(self, mock_get_action, mock_commit, mock_validate):
 
         org = factories.Organization()
@@ -57,7 +58,7 @@ class TestValidationJob(object):
 
     @mock.patch("ckanext.validation.jobs.validate", return_value=VALID_REPORT)
     @mock.patch.object(Session, "commit")
-    @mock.patch.object(ckantoolkit, "get_action")
+    @mock.patch.object(toolkit, "get_action")  # (canada fork only): ckan.plugins.toolkit
     def test_job_run_schema(self, mock_get_action, mock_commit, mock_validate):
 
         org = factories.Organization()
@@ -88,7 +89,7 @@ class TestValidationJob(object):
         uploader, "get_resource_uploader", return_value=mock_get_resource_uploader({})
     )
     @mock.patch.object(Session, "commit")
-    @mock.patch.object(ckantoolkit, "get_action")
+    @mock.patch.object(toolkit, "get_action")  # (canada fork only): ckan.plugins.toolkit
     def test_job_run_uploaded_file(
         self, mock_get_action, mock_commit, mock_uploader, mock_validate
     ):

@@ -3,7 +3,8 @@ import pytest
 from ckan.lib import uploader
 from ckanext.validation.model import create_tables, tables_exist
 
-import ckantoolkit as t
+# (canada fork only): ckan.plugins.toolkit
+import ckan.plugins.toolkit as t
 
 
 @pytest.fixture
