@@ -5,9 +5,10 @@ import datetime
 
 import pytest
 
-import ckantoolkit as t
-from ckantoolkit.tests.factories import Sysadmin, Dataset
-from ckantoolkit.tests.helpers import (
+# (canada fork only): ckan.plugins.toolkit
+import ckan.plugins.toolkit as t
+from ckan.tests.factories import Sysadmin, Dataset
+from ckan.tests.helpers import (
     call_action, _get_test_app
 )
 

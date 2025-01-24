@@ -3,7 +3,8 @@ import datetime
 from ckan.tests.helpers import reset_db
 from ckan.tests import factories
 
-from ckantoolkit import config
+# (canada fork only): ckan.plugins.toolkit
+from ckan.plugins.toolkit import config
 
 from ckanext.validation.helpers import (
     get_validation_badge,

@@ -2,7 +2,8 @@ import os
 import logging
 
 from ckan.lib.uploader import ResourceUpload
-from ckantoolkit import config, asbool
+# (canada fork only): ckan.plugins.toolkit
+from ckan.plugins.toolkit import config, asbool
 
 
 log = logging.getLogger(__name__)

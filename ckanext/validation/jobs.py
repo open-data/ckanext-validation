@@ -11,7 +11,7 @@ from frictionless import validate, system, Report, Schema, Dialect, Check, i18n
 
 from ckan.model import Session
 
-# (canada fork only): ckantoolkit -> toolkit
+# (canada fork only): ckan.plugins.toolkit
 from ckan.plugins import toolkit as t
 from ckan.plugins import plugin_loaded
 from ckan.lib.uploader import get_resource_uploader

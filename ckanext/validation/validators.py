@@ -3,7 +3,8 @@ import json
 
 import tableschema
 
-from ckantoolkit import Invalid, config
+# (canada fork only): ckan.plugins.toolkit
+from ckan.plugins.toolkit import Invalid, config
 
 
 # Input validators

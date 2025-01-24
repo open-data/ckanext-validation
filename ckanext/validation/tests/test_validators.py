@@ -1,7 +1,8 @@
 import json
 import pytest
 
-from ckantoolkit import Invalid
+# (canada fork only): ckan.plugins.toolkit
+from ckan.plugins.toolkit import Invalid
 
 from ckanext.validation.validators import (
     resource_schema_validator,

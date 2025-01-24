@@ -5,7 +5,8 @@ import logging
 import csv
 
 from ckan.lib.cli import query_yes_no, CkanCommand
-from ckantoolkit import get_action, config
+# (canada fork only): ckan.plugins.toolkit
+from ckan.plugins.toolkit import get_action, config
 
 from ckanext.validation import settings
 from ckanext.validation.model import create_tables, tables_exist
