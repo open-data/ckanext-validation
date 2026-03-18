@@ -1,0 +1,1 @@
+Added the HTTP header `CKAN/<ckan-version>` to Frictionless requests when downloading data from file sources.
