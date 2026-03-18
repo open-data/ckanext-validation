@@ -15,6 +15,8 @@ from ckan.model import Session
 from ckan.plugins import toolkit as t
 from ckan.plugins import plugin_loaded
 from ckan.lib.uploader import get_resource_uploader
+# (canada fork only): add User-Agent header
+from ckan.lib.helpers import ckan_version
 
 from ckanext.validation.model import Validation
 from ckanext.validation.utils import get_update_mode_from_config
@@ -159,6 +161,9 @@ def _validate_table(source, _format='csv', schema=None, **options):
     frictionless_context = { 'trusted': True }
     http_session = options.pop('http_session', None) or requests.Session()
     use_proxy = 'ckan.download_proxy' in t.config
+
+    # (canada fork only): add User-Agent header
+    http_session.headers.update({'User-Agent': 'CKAN/{}'.format(ckan_version())})
 
     if use_proxy:
         proxy = t.config.get('ckan.download_proxy')
